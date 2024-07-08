@@ -11,6 +11,22 @@ func _ready():
 	add_child(tmp_task)
 	title = tmp_task.name_task
 
+#Fonction appelé à tout les tick physiques du jeu (par défaut 60 fois par seconde). "delta" est le temps entre chaque tick. 
+func _physics_process(delta):
+	
+	#Vérifie que la fenêtre de tâche reste dans la fenêtre de jeu.
+	var gamewindow_size = DisplayServer.window_get_size()
+	
+	if position.x + size.x > gamewindow_size.x:
+		position.x = gamewindow_size.x - size.x
+	elif position.x < 0:
+		position.x = 0
+	
+	if position.y + size.y > gamewindow_size.y:
+		position.y = gamewindow_size.y - size.y
+	elif position.y < 0:
+		position.y = 0
+
 
 #Fonction qui permet de détruire la fenêtre, et donc la tâche. Préviens son pareznt, la scène de jeu "Game".
 func DeleteWindow():
