@@ -12,7 +12,7 @@ func _ready():
 	title = tmp_task.name_task
 
 
-#Fonction qui permet de détruire la fenêtre, et donc la tâche. Préviens son parent, la scène de jeu "Game".
+#Fonction qui permet de détruire la fenêtre, et donc la tâche. Préviens son pareznt, la scène de jeu "Game".
 func DeleteWindow():
 	get_parent().ThisWindowDelete(self)
 	queue_free()
