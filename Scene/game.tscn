@@ -1,0 +1,12 @@
+[gd_scene load_steps=2 format=3 uid="uid://bdengmo58dr5p"]
+
+[ext_resource type="Script" path="res://Script/game.gd" id="1_g0t02"]
+
+[node name="Game" type="Node2D"]
+script = ExtResource("1_g0t02")
+
+[node name="TimerLoadTask" type="Timer" parent="."]
+wait_time = 2.0
+autostart = true
+
+[connection signal="timeout" from="TimerLoadTask" to="." method="_on_timer_load_task_timeout"]
