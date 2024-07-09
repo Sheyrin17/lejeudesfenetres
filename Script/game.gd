@@ -4,25 +4,36 @@ extends Node2D
 @onready var preload_window_task = preload("res://Scene/windowtask.tscn")
 @onready var preload_alttabbutton = preload("res://Scene/alt_tab_button.tscn")
 
+@onready var FondNoir = $HUD/FondNoir
+
 @onready var HBoxAltTab = $HUD/HBoxAltTab
+
+@onready var RamBar = $HUD/HBoxTaskBar/RamBar
+
+@onready var VBoxGameOver = $HUD/VBoxGameOver
 
 @onready var SubWindowsTask = $CanvasSubWindows/SubWindowsContainer/SubWindowsTask
 
+@onready var TimerLoadTask = $TimerLoadTask
+
 #Les variables exportées sont visibles dans l'inspecteur de l'objet.
 
-#Sert à placer la prochaine fenêtre de tâche à côté de la dernière crée. Ce qui permet de la voir malgré qu'elle soit en dessous des autres fenêtres.
-@export var offset_windows_when_create = Vector2(30,30)
+#Sert à placer la prochaine fenêtre de tâche à côté de la dernière crée. Ce qui permet de la voir malgré qu'elle soit en dessous des autres fenêtres. En "y", sera ajouté la taille de la bar de tâche (ram).
+@export var offset_windows_when_create = Vector2(30,0)
+
+@export var ram_initialize_to = 0
 
 #Tableau dont les éléments sont toutes les fenêtres de tâches existantes. L'ordre des éléments corresponds à l'ordre de focus des fenêtres.
 var tab_window_exist = []
-
+#Tableau dont les éléments sont tous les boutons du menu Alt+Tab like. Chque bouton est associé avec une fenêtre. C'est un tableau qui est mise à jour en même temps que celui des fenêtre et qui suit les mêmes règles pour l'ordre de focus.
 var tab_button_alttab = []
 
 #Booléen qui permet d'autoriser les fenêtres à prendre le focus ou non.
 var can_change_focus = true
-
 #Booléen qui permet d'autoriser l'ouverture du menu Alt+Tab like.
 var can_alttab = true
+#Booléen qui vérifie si la partie est fini.
+var is_gameover = false
 
 #Variable qui va permettre de générer des nombres aléatoire.
 var rng_number = RandomNumberGenerator.new()
@@ -30,8 +41,12 @@ var rng_number = RandomNumberGenerator.new()
 
 #Fonction qui est appelée à l'initialisation de l'objet, ici la scène "Game".
 func _ready():
+	offset_windows_when_create.y += RamBar.size.y
+	
 	SubWindowsTask.gui_embed_subwindows = true;
 	SubWindowsTask.size = DisplayServer.window_get_size()
+	
+	RamBar.value = ram_initialize_to
 
 
 #Fonction appelé à tout les tick physiques du jeu (par défaut 60 fois par seconde). "delta" est le temps entre chaque tick. 
@@ -39,6 +54,7 @@ func _physics_process(delta):
 	if Input.is_action_pressed("A") and Input.is_action_pressed("Alt") and can_alttab:
 		if !HBoxAltTab.visible:
 			HBoxAltTab.visible = true
+			FondNoir.visible = true
 			if tab_button_alttab != []:
 				tab_button_alttab[0].grab_focus()
 			can_alttab = false
@@ -48,6 +64,8 @@ func _physics_process(delta):
 					#HBoxAltTab.add_child(i.instantiate())
 	
 	if Input.is_action_just_released("Alt") or Input.is_action_just_pressed("Enter"):
+		if is_gameover:
+			return
 		StopAltTab()
 		can_alttab = true
 	
@@ -110,6 +128,8 @@ func UpdateFocusOrderAltTab():
 
 #Fonction qui permet d'effacer la fenêtre "wdw" de "tab_window_exist".
 func ThisWindowDelete(wdw):
+	RamBar.value -= wdw.his_task_ram_charge
+	
 	for i in tab_button_alttab:
 		if i.ref_window == wdw:
 			tab_button_alttab.erase(i)
@@ -170,6 +190,11 @@ func _on_timer_load_task_timeout():
 	button_alttab.connect("stop_alttab", StopAltTab)
 	UpdateFocusOrderAltTab()
 	
+	RamBar.value += tmp_window.his_task_ram_charge
+	if RamBar.value >= RamBar.max_value:
+		GameOver()
+	
+	tmp_window.offset_rambar_y = RamBar.size.y
 	tab_window_exist[0].grab_focus()
 	
 	can_change_focus = true
@@ -182,3 +207,23 @@ func StopAltTab():
 		if i.has_focus():
 			i.ref_window.grab_focus()
 	HBoxAltTab.visible = false
+	FondNoir.visible = false
+
+
+#Fonction qui gère la fin de la partie. Affiche divers éléments sur le HUD.
+func GameOver():
+	is_gameover = true
+	TimerLoadTask.stop()
+	StopAltTab()
+	VBoxGameOver.visible = true
+	FondNoir.visible = true
+
+
+#Fonction appelée quand le bouton "Restart" est pressé. Permet de rechargé la scène "Game".
+func _on_button_restart_pressed():
+	get_tree().reload_current_scene()
+
+
+#Fonction appelée quand le bouton "Quit" est pressé. Permet de quitter l'application.
+func _on_button_quit_pressed():
+	get_tree().quit()

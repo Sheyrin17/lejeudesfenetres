@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://bdengmo58dr5p"]
+[gd_scene load_steps=3 format=3 uid="uid://bdengmo58dr5p"]
 
 [ext_resource type="Script" path="res://Script/game.gd" id="1_g0t02"]
+[ext_resource type="Texture2D" uid="uid://bqy2bnov2jb3f" path="res://Img/fondnoir.jpg" id="2_7g6fw"]
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1_g0t02")
@@ -28,6 +29,17 @@ render_target_update_mode = 4
 
 [node name="HUD" type="CanvasLayer" parent="."]
 
+[node name="FondNoir" type="TextureRect" parent="HUD"]
+visible = false
+self_modulate = Color(1, 1, 1, 0.494118)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_7g6fw")
+expand_mode = 5
+
 [node name="HBoxAltTab" type="HBoxContainer" parent="HUD"]
 visible = false
 anchors_preset = 15
@@ -38,4 +50,52 @@ grow_vertical = 2
 focus_mode = 2
 alignment = 1
 
+[node name="HBoxTaskBar" type="HBoxContainer" parent="HUD"]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="RamBar" type="ProgressBar" parent="HUD/HBoxTaskBar"]
+modulate = Color(0.729412, 0.658824, 0, 1)
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+size_flags_horizontal = 3
+step = 1.0
+value = 50.0
+rounded = true
+
+[node name="VBoxGameOver" type="VBoxContainer" parent="HUD"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="LabelGameOver" type="Label" parent="HUD/VBoxGameOver"]
+layout_mode = 2
+text = "Game Over"
+horizontal_alignment = 1
+vertical_alignment = 1
+uppercase = true
+
+[node name="ButtonRestart" type="Button" parent="HUD/VBoxGameOver"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 5
+text = "Restart"
+
+[node name="ButtonQuit" type="Button" parent="HUD/VBoxGameOver"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 5
+text = "Quit"
+
 [connection signal="timeout" from="TimerLoadTask" to="." method="_on_timer_load_task_timeout"]
+[connection signal="pressed" from="HUD/VBoxGameOver/ButtonRestart" to="." method="_on_button_restart_pressed"]
+[connection signal="pressed" from="HUD/VBoxGameOver/ButtonQuit" to="." method="_on_button_quit_pressed"]
