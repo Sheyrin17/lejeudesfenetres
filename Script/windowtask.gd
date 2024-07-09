@@ -4,8 +4,11 @@ extends Window
 
 #Les variables exportées sont visibles dans l'inspecteur de l'objet.
 
-
+#Référence à la scène "Game".
 var window_parent = null
+
+#Référence à son bouton dans le menu Alt+Tab like.
+var ref_buttonalttab = null
 
 
 #Fonction appelée à l'initialisation de l'objet. La fenêtre charge alors une tâche.

@@ -21,30 +21,43 @@ var tab_button_alttab = []
 #Booléen qui permet d'autoriser les fenêtres à prendre le focus ou non.
 var can_change_focus = true
 
+#Booléen qui permet d'autoriser l'ouverture du menu Alt+Tab like.
 var can_alttab = true
 
+#Variable qui va permettre de générer des nombres aléatoire.
 var rng_number = RandomNumberGenerator.new()
 
 
+#Fonction qui est appelée à l'initialisation de l'objet, ici la scène "Game".
 func _ready():
 	SubWindowsTask.gui_embed_subwindows = true;
 	SubWindowsTask.size = DisplayServer.window_get_size()
 
 
-func _process(delta):
+#Fonction appelé à tout les tick physiques du jeu (par défaut 60 fois par seconde). "delta" est le temps entre chaque tick. 
+func _physics_process(delta):
 	if Input.is_action_pressed("A") and Input.is_action_pressed("Alt") and can_alttab:
 		if !HBoxAltTab.visible:
 			HBoxAltTab.visible = true
 			if tab_button_alttab != []:
 				tab_button_alttab[0].grab_focus()
+			can_alttab = false
 			
 			#if tab_button_alttab != []:
 				#for i in tab_button_alttab:
 					#HBoxAltTab.add_child(i.instantiate())
 	
-	if Input.is_action_just_released("A") or Input.is_action_just_released("Alt"):
+	if Input.is_action_just_released("Alt") or Input.is_action_just_pressed("Enter"):
 		StopAltTab()
 		can_alttab = true
+	
+	#if Input.is_action_pressed("A") and Input.is_action_pressed("Alt") and !can_alttab:
+		#if tab_button_alttab != []:
+			#for i in tab_button_alttab:
+				#if i.has_focus():
+					#if i.find_valid_focus_neighbor(2) != null:
+						#i.find_valid_focus_neighbor(2).grab_focus()
+						#break
 
 
 #Fonction qui permet de donner à la fenêtre "wdw" le focus. Une réorganisation de "tab_window_exist" se fait alors.
@@ -53,43 +66,46 @@ func ChangeFocus(wdw):
 		return
 	
 	var tmp_tab_sort = []
-	tmp_tab_sort += [wdw]
+	tmp_tab_sort.push_front(wdw)
 	
 	for i in tab_window_exist:
 		if i != wdw:
-			tmp_tab_sort += [i]
+			tmp_tab_sort.push_back(i)
 	
 	tab_window_exist = tmp_tab_sort
 	
-	var tmp_tab_button = []
-	var tmp_butt = null
-	
-	for i in tab_button_alttab:
-		if i.ref_window == wdw:
-			tmp_butt = i
-		else:
-			tmp_tab_button += [i]
-	
-	if tmp_butt != null:
-		tmp_tab_button.push_front(tmp_butt)
-	
-	tab_button_alttab = tmp_tab_button
-	HBoxAltTab.move_child(tmp_butt, 0)
-	
-	if tab_button_alttab.size() > 1:
-		for i in range(0, tab_button_alttab.size()-1):
-			if i - 1 < 0:
-				tab_button_alttab[i].focus_neighbor_left = tab_button_alttab[-1].get_path()
-			else:
-				tab_button_alttab[i].focus_neighbor_left = tab_button_alttab[i-1].get_path()
-			
-			if i + 1 == tab_button_alttab.size():
-				tab_button_alttab[i].focus_neighbor_right = tab_button_alttab[0].get_path()
-			else:
-				tab_button_alttab[i].focus_neighbor_right = tab_button_alttab[i+1].get_path()
+	UpdateOrderAltTab(wdw)
 	
 	
 	StopAltTab()
+
+#Fonction qui permet de réorganiser "tab_button_alt" suivant l'ordre de focus des fenêtres de tâches où "wdw" est la fenêtre qui prend le focus.
+func UpdateOrderAltTab(wdw):
+	var tmp_tab_button = []
+	tmp_tab_button.push_front(wdw.ref_buttonalttab)
+	
+	for i in tab_button_alttab:
+		if i != wdw.ref_buttonalttab:
+			tmp_tab_button.push_back(i)
+	
+	tab_button_alttab = tmp_tab_button
+	HBoxAltTab.move_child(wdw.ref_buttonalttab, 0)
+	
+	UpdateFocusOrderAltTab()
+
+
+#Fonction qui permet de réorganiser les voisins des boutons de la fenêtre Alt+Tab like. Ce qui permet de passer d'un bouton à l'autre en utilisant des touches du clavier, comme les flèches droite/gauche ou encore en appuyant sur A.
+func UpdateFocusOrderAltTab():
+	
+	if HBoxAltTab.get_child_count() > 1:
+		for i in range(0, HBoxAltTab.get_child_count()):
+			if i > 0:
+				HBoxAltTab.get_children()[i].focus_neighbor_left = HBoxAltTab.get_children()[i-1].get_path()
+			if i+1 < HBoxAltTab.get_child_count():
+				HBoxAltTab.get_children()[i].focus_neighbor_right = HBoxAltTab.get_children()[i+1].get_path()
+		
+		HBoxAltTab.get_children()[0].focus_neighbor_left = HBoxAltTab.get_children()[-1].get_path()
+		HBoxAltTab.get_children()[-1].focus_neighbor_right = HBoxAltTab.get_children()[0].get_path()
 
 
 #Fonction qui permet d'effacer la fenêtre "wdw" de "tab_window_exist".
@@ -104,7 +120,7 @@ func ThisWindowDelete(wdw):
 		tab_window_exist[0].grab_focus()
 
 
-#Fonction appelée quand le timer "TimerLoadTask" se finit. Crée alors une nouvelle fenêtre de tâche. L'intègre à "tab_window_exist". La fait apparaître dans les limitations de la fenêtre de jeu.
+#Fonction appelée quand le timer "TimerLoadTask" se finit. Crée alors une nouvelle fenêtre de tâche. L'intègre à "tab_window_exist". La fait apparaître dans les limitations de la fenêtre de jeu. Crée un bouton dans "HBoxAltTab" qui fait référence à cette fenêtre.
 func _on_timer_load_task_timeout():
 	can_change_focus = false
 	
@@ -131,45 +147,35 @@ func _on_timer_load_task_timeout():
 	if tmp_window.position.y + tmp_window.size.y + offset_windows_when_create.y > gamewindow_size.y:
 		tmp_window.position.y = gamewindow_size.y - tmp_window.size.y - offset_windows_when_create.y
 	
+	var button_alttab = preload_alttabbutton.instantiate()
+	
 	if tab_window_exist != []:
 		var focus_elem = tab_window_exist.pop_front()
 		tab_window_exist.push_front(tmp_window)
 		tab_window_exist.push_front(focus_elem)
 		
 		var focus_first_elem = tab_button_alttab.pop_front()
-		var button_alttab = preload_alttabbutton.instantiate()
-		button_alttab.ref_window = tmp_window
-		HBoxAltTab.add_child(button_alttab)
 		tab_button_alttab.push_front(button_alttab)
 		tab_button_alttab.push_front(focus_first_elem)
-		
-		#for i in range(0, tab_button_alttab.size()-1):
-			#if i - 1 < 0:
-				#tab_button_alttab[i].focus_neighbor_left = tab_button_alttab[-1].get_path()
-			#else:
-				#tab_button_alttab[i].focus_neighbor_left = tab_button_alttab[i-1].get_path()
-			#
-			#if i + 1 == tab_button_alttab.size():
-				#tab_button_alttab[i].focus_neighbor_right = tab_button_alttab[0].get_path()
-			#else:
-				#tab_button_alttab[i].focus_neighbor_right = tab_button_alttab[i+1].get_path()
-		
+	
 	else:
 		tab_window_exist.push_front(tmp_window)
-		var button_alttab = preload_alttabbutton.instantiate()
-		button_alttab.ref_window = tmp_window
-		HBoxAltTab.add_child(button_alttab)
+		
+		
 		tab_button_alttab.push_front(button_alttab)
 	
-	#tab_window_exist += [tmp_window]
-	#for i in range(tab_window_exist.size()-1, 0, -1):
-		#tab_window_exist[i].grab_focus()
+	button_alttab.ref_window = tmp_window
+	tmp_window.ref_buttonalttab = button_alttab
+	HBoxAltTab.add_child(button_alttab)
+	button_alttab.connect("stop_alttab", StopAltTab)
+	UpdateFocusOrderAltTab()
 	
 	tab_window_exist[0].grab_focus()
 	
 	can_change_focus = true
 
 
+#Foncion qui permet de cacher le menu Alt+Tab like.
 func StopAltTab():
 	can_alttab = false
 	for i in tab_button_alttab:
