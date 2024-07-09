@@ -5,10 +5,14 @@
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1_g0t02")
+game_mode = 1
 
 [node name="TimerLoadTask" type="Timer" parent="."]
 wait_time = 2.0
 autostart = true
+
+[node name="TimerPlayMode" type="Timer" parent="."]
+one_shot = true
 
 [node name="CanvasSubWindows" type="CanvasLayer" parent="."]
 
@@ -51,6 +55,7 @@ focus_mode = 2
 alignment = 1
 
 [node name="HBoxTaskBar" type="HBoxContainer" parent="HUD"]
+visible = false
 anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
@@ -96,6 +101,34 @@ size_flags_horizontal = 4
 size_flags_vertical = 5
 text = "Quit"
 
+[node name="VBoxObjectiveTask" type="VBoxContainer" parent="HUD"]
+anchors_preset = -1
+anchor_left = 0.939
+anchor_top = 0.094
+anchor_right = 0.939
+anchor_bottom = 0.094
+offset_left = -55.728
+offset_top = -48.912
+offset_right = 61.272
+offset_bottom = 0.0879974
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="LabelObjectivesTasks" type="Label" parent="HUD/VBoxObjectiveTask"]
+visible = false
+layout_mode = 2
+text = "Objectives : 15"
+
+[node name="LabelTasksFinish" type="Label" parent="HUD/VBoxObjectiveTask"]
+layout_mode = 2
+text = "Tasks done : 5 !
+Keep going !"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [connection signal="timeout" from="TimerLoadTask" to="." method="_on_timer_load_task_timeout"]
+[connection signal="timeout" from="TimerPlayMode" to="." method="_on_timer_play_mode_timeout"]
 [connection signal="pressed" from="HUD/VBoxGameOver/ButtonRestart" to="." method="_on_button_restart_pressed"]
 [connection signal="pressed" from="HUD/VBoxGameOver/ButtonQuit" to="." method="_on_button_quit_pressed"]

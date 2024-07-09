@@ -6,22 +6,36 @@ extends Node2D
 
 @onready var FondNoir = $HUD/FondNoir
 
+@onready var LabelObjectiveTask = $HUD/VBoxObjectiveTask/LabelObjectivesTasks
+@onready var LabelTasksFinish = $HUD/VBoxObjectiveTask/LabelTasksFinish
+
 @onready var HBoxAltTab = $HUD/HBoxAltTab
 
-@onready var RamBar = $HUD/HBoxTaskBar/RamBar
+#@onready var RamBar = $HUD/HBoxTaskBar/RamBar
 
 @onready var VBoxGameOver = $HUD/VBoxGameOver
+@onready var LabelGameOver = $HUD/VBoxGameOver/LabelGameOver
 
 @onready var SubWindowsTask = $CanvasSubWindows/SubWindowsContainer/SubWindowsTask
 
 @onready var TimerLoadTask = $TimerLoadTask
+@onready var TimerPlayMode = $TimerPlayMode
+
+@onready var LabelTimeLeft = $HUD/LabelTimeLeft
 
 #Les variables exportées sont visibles dans l'inspecteur de l'objet.
+
+#Variable qui permet de avoir le mode de jeu. "TIMER" signifie que le jeu se joue suivant un chronomètre. "TASKS" signifie que le jeu se joue suivant un nombre de tâche à atteindre.
+@export_enum("TIMER", "TASKS") var game_mode : int
+#Nombre de seconde pour le jeu en mode "TIMER".
+@export var timer_playmode_wait_time = 30
+#Nombre de tâches à effectuer dans le mode de jeu "TASKS"
+@export var nb_task_to_finish = 10
 
 #Sert à placer la prochaine fenêtre de tâche à côté de la dernière crée. Ce qui permet de la voir malgré qu'elle soit en dessous des autres fenêtres. En "y", sera ajouté la taille de la bar de tâche (ram).
 @export var offset_windows_when_create = Vector2(30,0)
 
-@export var ram_initialize_to = 0
+#@export var ram_initialize_to = 0
 
 #Tableau dont les éléments sont toutes les fenêtres de tâches existantes. L'ordre des éléments corresponds à l'ordre de focus des fenêtres.
 var tab_window_exist = []
@@ -35,22 +49,35 @@ var can_alttab = true
 #Booléen qui vérifie si la partie est fini.
 var is_gameover = false
 
+#Compteur des tâches finit par le joueur. Sert dans les deux modes de jeu.
+var count_tasks_finish = 0
+
 #Variable qui va permettre de générer des nombres aléatoire.
 var rng_number = RandomNumberGenerator.new()
 
 
 #Fonction qui est appelée à l'initialisation de l'objet, ici la scène "Game".
 func _ready():
-	offset_windows_when_create.y += RamBar.size.y
+	#offset_windows_when_create.y += RamBar.size.y
 	
 	SubWindowsTask.gui_embed_subwindows = true;
 	SubWindowsTask.size = DisplayServer.window_get_size()
 	
-	RamBar.value = ram_initialize_to
-
+	#RamBar.value = ram_initialize_to
+	
+	if game_mode == 0:
+		TimerPlayMode.wait_time = timer_playmode_wait_time
+		TimerPlayMode.start()
+	
+	elif game_mode == 1:
+		LabelObjectiveTask.visible = true
+		LabelObjectiveTask.text = "Objective : " + str(nb_task_to_finish)
 
 #Fonction appelé à tout les tick physiques du jeu (par défaut 60 fois par seconde). "delta" est le temps entre chaque tick. 
 func _physics_process(delta):
+	LabelTimeLeft.text = str( snapped(TimerPlayMode.time_left, 0.01) )
+	
+	
 	if Input.is_action_pressed("A") and Input.is_action_pressed("Alt") and can_alttab:
 		if !HBoxAltTab.visible:
 			HBoxAltTab.visible = true
@@ -128,7 +155,7 @@ func UpdateFocusOrderAltTab():
 
 #Fonction qui permet d'effacer la fenêtre "wdw" de "tab_window_exist".
 func ThisWindowDelete(wdw):
-	RamBar.value -= wdw.his_task_ram_charge
+	#RamBar.value -= wdw.his_task_ram_charge
 	
 	for i in tab_button_alttab:
 		if i.ref_window == wdw:
@@ -138,6 +165,11 @@ func ThisWindowDelete(wdw):
 	tab_window_exist.erase(wdw)
 	if tab_window_exist != []:
 		tab_window_exist[0].grab_focus()
+	
+	count_tasks_finish += 1
+	LabelTasksFinish.text = "Tasks done : " + str(count_tasks_finish)+ " !\nKeep going !"
+	if game_mode == 1 and count_tasks_finish == nb_task_to_finish:
+		StopGameOnTasksMode()
 
 
 #Fonction appelée quand le timer "TimerLoadTask" se finit. Crée alors une nouvelle fenêtre de tâche. L'intègre à "tab_window_exist". La fait apparaître dans les limitations de la fenêtre de jeu. Crée un bouton dans "HBoxAltTab" qui fait référence à cette fenêtre.
@@ -190,11 +222,12 @@ func _on_timer_load_task_timeout():
 	button_alttab.connect("stop_alttab", StopAltTab)
 	UpdateFocusOrderAltTab()
 	
-	RamBar.value += tmp_window.his_task_ram_charge
-	if RamBar.value >= RamBar.max_value:
-		GameOver()
+	#RamBar.value += tmp_window.his_task_ram_charge
+	#if RamBar.value >= RamBar.max_value:
+		#GameOver()
+	#
+	#tmp_window.offset_rambar_y = RamBar.size.y
 	
-	tmp_window.offset_rambar_y = RamBar.size.y
 	tab_window_exist[0].grab_focus()
 	
 	can_change_focus = true
@@ -210,14 +243,32 @@ func StopAltTab():
 	FondNoir.visible = false
 
 
-#Fonction qui gère la fin de la partie. Affiche divers éléments sur le HUD.
+#Fonction qui gère la fin de la partie si elle est perdue.
+#Etait appelé si la Ram passée 100%. Inutilisée pour l'instant.
 func GameOver():
+	LabelGameOver.text = "Game Over"
+	StopGame()
+
+
+#Affiche divers éléments sur le HUD. Est appelée à la fin du niveau.
+func StopGame():
 	is_gameover = true
 	TimerLoadTask.stop()
 	StopAltTab()
-	VBoxGameOver.visible = true
 	FondNoir.visible = true
+	VBoxGameOver.visible = true
 
+
+#Fonction qui gère la fin du niveau en mode "Timer".
+func StopGameOnTimerMode():
+	LabelGameOver.text = "Congratulations !\nYou finished " + str(count_tasks_finish) + " tasks !" + "\nYou will finish more tomorrow !"
+	StopGame()
+
+
+#Fonction qui gère la fin du niveau en mode "Tasks".
+func StopGameOnTasksMode():
+	LabelGameOver.text = "You have done all your tasks.\nThere will be more tomorrow."
+	StopGame()
 
 #Fonction appelée quand le bouton "Restart" est pressé. Permet de rechargé la scène "Game".
 func _on_button_restart_pressed():
@@ -227,3 +278,10 @@ func _on_button_restart_pressed():
 #Fonction appelée quand le bouton "Quit" est pressé. Permet de quitter l'application.
 func _on_button_quit_pressed():
 	get_tree().quit()
+
+
+#Est appelée quand le timer arrive à son terme dans le mode de jeu "Timer". Ce qui sonne la fin du niveau.
+func _on_timer_play_mode_timeout():
+	StopGameOnTimerMode()
+
+
