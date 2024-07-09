@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://Script/testtask.gd" id="1_cmwrh"]
 
-[node name="TestTask" type="Control"]
+[node name="TestTask" type="Control" groups=["Task"]]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0

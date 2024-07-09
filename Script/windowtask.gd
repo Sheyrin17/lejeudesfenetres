@@ -5,6 +5,9 @@ extends Window
 #Les variables exportées sont visibles dans l'inspecteur de l'objet.
 
 
+var window_parent = null
+
+
 #Fonction appelée à l'initialisation de l'objet. La fenêtre charge alors une tâche.
 func _ready():
 	var tmp_task = preload_test_task.instantiate()
@@ -30,10 +33,10 @@ func _physics_process(delta):
 
 #Fonction qui permet de détruire la fenêtre, et donc la tâche. Préviens son pareznt, la scène de jeu "Game".
 func DeleteWindow():
-	get_parent().ThisWindowDelete(self)
+	window_parent.ThisWindowDelete(self)
 	queue_free()
 
 #Fonction appelée quand la fenêtre de tâche obtient le focus, quand le joueur lui clique dessus. Préviens son parent, la scène "Game", qu'elle récupère le focus.
 func _on_focus_entered():
-	get_parent().ChangeFocus(self)
+	window_parent.ChangeFocus(self)
 

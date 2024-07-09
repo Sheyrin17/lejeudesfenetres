@@ -2,9 +2,11 @@
 
 [ext_resource type="Script" path="res://Script/windowtask.gd" id="1_v113a"]
 
-[node name="WindowTask" type="Window"]
+[node name="WindowTask" type="Window" groups=["WindowTask"]]
+disable_3d = true
 size = Vector2i(400, 200)
 unresizable = true
+popup_window = true
 min_size = Vector2i(400, 200)
 content_scale_mode = 1
 script = ExtResource("1_v113a")
