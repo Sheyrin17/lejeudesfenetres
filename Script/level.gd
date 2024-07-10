@@ -56,6 +56,9 @@ var count_tasks_finish = 0
 var rng_number = RandomNumberGenerator.new()
 
 
+signal level_finish(level_scene)
+
+
 #Fonction qui est appelée à l'initialisation de l'objet, ici la scène "Game".
 func _ready():
 	#offset_windows_when_create.y += RamBar.size.y
@@ -169,7 +172,7 @@ func ThisWindowDelete(wdw):
 	count_tasks_finish += 1
 	LabelTasksFinish.text = "Tasks done : " + str(count_tasks_finish)+ " !\nKeep going !"
 	if game_mode == 1 and count_tasks_finish == nb_task_to_finish:
-		StopGameOnTasksMode()
+		StopLevelOnTasksMode()
 
 
 #Fonction appelée quand le timer "TimerLoadTask" se finit. Crée alors une nouvelle fenêtre de tâche. L'intègre à "tab_window_exist". La fait apparaître dans les limitations de la fenêtre de jeu. Crée un bouton dans "HBoxAltTab" qui fait référence à cette fenêtre.
@@ -245,30 +248,31 @@ func StopAltTab():
 
 #Fonction qui gère la fin de la partie si elle est perdue.
 #Etait appelé si la Ram passée 100%. Inutilisée pour l'instant.
-func GameOver():
+func LevelOver():
 	LabelGameOver.text = "Game Over"
-	StopGame()
+	StopLevel()
 
 
 #Affiche divers éléments sur le HUD. Est appelée à la fin du niveau.
-func StopGame():
+func StopLevel():
 	is_gameover = true
 	TimerLoadTask.stop()
 	StopAltTab()
 	FondNoir.visible = true
 	VBoxGameOver.visible = true
+	emit_signal("level_finish", self)
 
 
 #Fonction qui gère la fin du niveau en mode "Timer".
-func StopGameOnTimerMode():
+func StopLevelOnTimerMode():
 	LabelGameOver.text = "Congratulations !\nYou finished " + str(count_tasks_finish) + " tasks !" + "\nYou will finish more tomorrow !"
-	StopGame()
+	StopLevel()
 
 
 #Fonction qui gère la fin du niveau en mode "Tasks".
-func StopGameOnTasksMode():
+func StopLevelOnTasksMode():
 	LabelGameOver.text = "You have done all your tasks.\nThere will be more tomorrow."
-	StopGame()
+	StopLevel()
 
 #Fonction appelée quand le bouton "Restart" est pressé. Permet de rechargé la scène "Game".
 func _on_button_restart_pressed():
@@ -282,6 +286,6 @@ func _on_button_quit_pressed():
 
 #Est appelée quand le timer arrive à son terme dans le mode de jeu "Timer". Ce qui sonne la fin du niveau.
 func _on_timer_play_mode_timeout():
-	StopGameOnTimerMode()
+	StopLevelOnTimerMode()
 
 
