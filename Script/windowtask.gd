@@ -24,6 +24,7 @@ func _ready():
 	#his_task_ram_charge = tmp_task.ram_charge
 
 #Fonction appelé à tout les tick physiques du jeu (par défaut 60 fois par seconde). "delta" est le temps entre chaque tick. 
+@warning_ignore("unused_parameter")
 func _physics_process(delta):
 	
 	#Vérifie que la fenêtre de tâche reste dans la fenêtre de jeu.

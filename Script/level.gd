@@ -4,6 +4,10 @@ extends Node2D
 @onready var preload_window_task = preload("res://Scene/windowtask.tscn")
 @onready var preload_alttabbutton = preload("res://Scene/alt_tab_button.tscn")
 
+@onready var CanvasSubWindows = $CanvasSubWindows
+
+@onready var HUD = $HUD
+
 @onready var FondNoir = $HUD/FondNoir
 
 @onready var LabelObjectiveTask = $HUD/VBoxObjectiveTask/LabelObjectivesTasks
@@ -20,8 +24,12 @@ extends Node2D
 
 @onready var TimerLoadTask = $TimerLoadTask
 @onready var TimerPlayMode = $TimerPlayMode
+@onready var TimerEndDialogue = $TimerEndDialogue
 
 @onready var LabelTimeLeft = $HUD/LabelTimeLeft
+
+@onready var Dialogue = $HUD/Dialogue
+@onready var LabelDialogue = $HUD/Dialogue/LabelDialogue
 
 #Les variables exportées sont visibles dans l'inspecteur de l'objet.
 
@@ -34,6 +42,10 @@ extends Node2D
 
 #Sert à placer la prochaine fenêtre de tâche à côté de la dernière crée. Ce qui permet de la voir malgré qu'elle soit en dessous des autres fenêtres. En "y", sera ajouté la taille de la bar de tâche (ram).
 @export var offset_windows_when_create = Vector2(30,0)
+
+@export var dialogue_at_the_end_of_level = "Dialogue level"
+
+@export var game_scene : Node2D = null
 
 #@export var ram_initialize_to = 0
 
@@ -56,17 +68,31 @@ var count_tasks_finish = 0
 var rng_number = RandomNumberGenerator.new()
 
 
-signal level_finish(level_scene)
+signal level_finish()
 
 
 #Fonction qui est appelée à l'initialisation de l'objet, ici la scène "Game".
 func _ready():
 	#offset_windows_when_create.y += RamBar.size.y
 	
+	#StartLevel()
+	
 	SubWindowsTask.gui_embed_subwindows = true;
 	SubWindowsTask.size = DisplayServer.window_get_size()
 	
 	#RamBar.value = ram_initialize_to
+
+
+func StartLevel():
+	if game_scene != null:
+		level_finish.connect(game_scene._on_level_level_finish)
+	
+	self.visible = true
+	HUD.visible = true
+	Dialogue.visible = false
+	CanvasSubWindows.visible = true
+	
+	TimerLoadTask.start()
 	
 	if game_mode == 0:
 		TimerPlayMode.wait_time = timer_playmode_wait_time
@@ -76,7 +102,9 @@ func _ready():
 		LabelObjectiveTask.visible = true
 		LabelObjectiveTask.text = "Objective : " + str(nb_task_to_finish)
 
+
 #Fonction appelé à tout les tick physiques du jeu (par défaut 60 fois par seconde). "delta" est le temps entre chaque tick. 
+@warning_ignore("unused_parameter")
 func _physics_process(delta):
 	LabelTimeLeft.text = str( snapped(TimerPlayMode.time_left, 0.01) )
 	
@@ -257,10 +285,17 @@ func LevelOver():
 func StopLevel():
 	is_gameover = true
 	TimerLoadTask.stop()
+	TimerPlayMode.stop()
+	
 	StopAltTab()
+	DeleteAllWindows()
+	
 	FondNoir.visible = true
-	VBoxGameOver.visible = true
-	emit_signal("level_finish", self)
+	#VBoxGameOver.visible = true
+	Dialogue.visible = true
+	
+	LabelDialogue.text = dialogue_at_the_end_of_level
+	TimerEndDialogue.start()
 
 
 #Fonction qui gère la fin du niveau en mode "Timer".
@@ -289,3 +324,15 @@ func _on_timer_play_mode_timeout():
 	StopLevelOnTimerMode()
 
 
+func _on_timer_end_dialogue_timeout():
+	self.visible = false
+	HUD.visible = false
+	Dialogue.visible = false
+	CanvasSubWindows.visible = false
+	emit_signal("level_finish")
+	level_finish.disconnect(game_scene._on_level_level_finish)
+
+
+func DeleteAllWindows():
+	for i in range(SubWindowsTask.get_child_count(), 0, -1):
+		SubWindowsTask.get_children()[i-1].queue_free()

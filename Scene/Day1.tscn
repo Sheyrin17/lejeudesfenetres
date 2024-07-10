@@ -1,0 +1,29 @@
+[gd_scene load_steps=3 format=3 uid="uid://b8jn46hub5n1f"]
+
+[ext_resource type="Script" path="res://Script/game.gd" id="1_1vh2p"]
+[ext_resource type="PackedScene" uid="uid://bdengmo58dr5p" path="res://Scene/level.tscn" id="2_y52fa"]
+
+[node name="Day1" type="Node2D" node_paths=PackedStringArray("tab_all_level")]
+script = ExtResource("1_1vh2p")
+tab_all_level = [NodePath("AllLevels/Level0"), NodePath("AllLevels/Level1")]
+
+[node name="AllLevels" type="Node2D" parent="."]
+
+[node name="Level0" parent="AllLevels" node_paths=PackedStringArray("game_scene") instance=ExtResource("2_y52fa")]
+timer_playmode_wait_time = 10
+nb_task_to_finish = 1
+dialogue_at_the_end_of_level = "Dialogue level 1"
+game_scene = NodePath("../..")
+
+[node name="Level1" parent="AllLevels" node_paths=PackedStringArray("game_scene") instance=ExtResource("2_y52fa")]
+game_mode = 0
+timer_playmode_wait_time = 10
+nb_task_to_finish = 5
+dialogue_at_the_end_of_level = "Dialogue level 2"
+game_scene = NodePath("../..")
+
+[node name="TimerBetweenLevels" type="Timer" parent="."]
+wait_time = 2.0
+one_shot = true
+
+[connection signal="timeout" from="TimerBetweenLevels" to="." method="_on_timer_between_level_timeout"]
