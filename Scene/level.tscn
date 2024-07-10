@@ -125,7 +125,7 @@ text = "Objectives : 15"
 
 [node name="LabelTasksFinish" type="Label" parent="HUD/VBoxObjectiveTask"]
 layout_mode = 2
-text = "Tasks done : 5 !
+text = "Tasks done : 0 !
 Keep going !"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -142,25 +142,7 @@ offset_right = 53.664
 offset_bottom = 42.088
 vertical_alignment = 1
 
-[node name="Dialogue" type="CanvasLayer" parent="HUD"]
-layer = 2
-visible = false
-
-[node name="LabelDialogue" type="Label" parent="HUD/Dialogue"]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-text = "Dialogue"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="TimerEndDialogue" type="Timer" parent="."]
-one_shot = true
-
 [connection signal="timeout" from="TimerLoadTask" to="." method="_on_timer_load_task_timeout"]
 [connection signal="timeout" from="TimerPlayMode" to="." method="_on_timer_play_mode_timeout"]
 [connection signal="pressed" from="HUD/VBoxGameOver/ButtonRestart" to="." method="_on_button_restart_pressed"]
 [connection signal="pressed" from="HUD/VBoxGameOver/ButtonQuit" to="." method="_on_button_quit_pressed"]
-[connection signal="timeout" from="TimerEndDialogue" to="." method="_on_timer_end_dialogue_timeout"]

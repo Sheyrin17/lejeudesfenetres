@@ -1,7 +1,133 @@
-[gd_scene load_steps=3 format=3 uid="uid://b8jn46hub5n1f"]
+[gd_scene load_steps=7 format=3 uid="uid://b8jn46hub5n1f"]
 
 [ext_resource type="Script" path="res://Script/game.gd" id="1_1vh2p"]
 [ext_resource type="PackedScene" uid="uid://bdengmo58dr5p" path="res://Scene/level.tscn" id="2_y52fa"]
+[ext_resource type="Texture2D" uid="uid://bqy2bnov2jb3f" path="res://Img/fondnoir.jpg" id="3_heysm"]
+
+[sub_resource type="Animation" id="Animation_ygh2p"]
+resource_name = "loading_desktop"
+length = 2.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("HUDDay/EcranNoir:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
+}
+tracks/1/type = "bezier"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("HUDDay/EcranNoir:self_modulate:r")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"handle_modes": PackedInt32Array(0, 0),
+"points": PackedFloat32Array(1, -0.25, 0, 0.25, 0, 1, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0, 2)
+}
+tracks/2/type = "bezier"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("HUDDay/EcranNoir:self_modulate:g")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"handle_modes": PackedInt32Array(0, 0),
+"points": PackedFloat32Array(1, -0.25, 0, 0.25, 0, 1, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0, 2)
+}
+tracks/3/type = "bezier"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("HUDDay/EcranNoir:self_modulate:b")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"handle_modes": PackedInt32Array(0, 0),
+"points": PackedFloat32Array(1, -0.25, 0, 0.25, 0, 1, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0, 2)
+}
+tracks/4/type = "bezier"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("HUDDay/EcranNoir:self_modulate:a")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"handle_modes": PackedInt32Array(0, 0),
+"points": PackedFloat32Array(1, -0.25, 0, 0.25, 0, 0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0, 2)
+}
+
+[sub_resource type="Animation" id="Animation_7aau8"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("HUDDay/EcranNoir:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/1/type = "bezier"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("HUDDay/EcranNoir:self_modulate:r")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(1, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+tracks/2/type = "bezier"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("HUDDay/EcranNoir:self_modulate:g")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(1, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+tracks/3/type = "bezier"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("HUDDay/EcranNoir:self_modulate:b")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(1, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+tracks/4/type = "bezier"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("HUDDay/EcranNoir:self_modulate:a")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_brvwk"]
+_data = {
+"RESET": SubResource("Animation_7aau8"),
+"loading_desktop": SubResource("Animation_ygh2p")
+}
 
 [node name="Day1" type="Node2D" node_paths=PackedStringArray("tab_all_level")]
 script = ExtResource("1_1vh2p")
@@ -12,18 +138,75 @@ tab_all_level = [NodePath("AllLevels/Level0"), NodePath("AllLevels/Level1")]
 [node name="Level0" parent="AllLevels" node_paths=PackedStringArray("game_scene") instance=ExtResource("2_y52fa")]
 timer_playmode_wait_time = 10
 nb_task_to_finish = 1
-dialogue_at_the_end_of_level = "Dialogue level 1"
 game_scene = NodePath("../..")
 
 [node name="Level1" parent="AllLevels" node_paths=PackedStringArray("game_scene") instance=ExtResource("2_y52fa")]
 game_mode = 0
 timer_playmode_wait_time = 10
 nb_task_to_finish = 5
-dialogue_at_the_end_of_level = "Dialogue level 2"
 game_scene = NodePath("../..")
 
 [node name="TimerBetweenLevels" type="Timer" parent="."]
 wait_time = 2.0
 one_shot = true
 
+[node name="HUDDay" type="CanvasLayer" parent="."]
+
+[node name="TextureInfoGame" type="TextureRect" parent="HUDDay"]
+self_modulate = Color(1, 1, 1, 0.313726)
+custom_minimum_size = Vector2(0, 40)
+anchors_preset = -1
+anchor_top = 0.938
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 23.176
+grow_horizontal = 2
+grow_vertical = 0
+texture = ExtResource("3_heysm")
+expand_mode = 1
+
+[node name="HBoxInfoGame" type="HBoxContainer" parent="HUDDay/TextureInfoGame"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.88
+anchor_top = 0.5
+anchor_right = 0.88
+anchor_bottom = 0.5
+offset_left = -97.7601
+offset_top = -20.0
+offset_right = 138.24
+offset_bottom = 20.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_constants/separation = 50
+alignment = 2
+
+[node name="ButtonContact" type="Button" parent="HUDDay/TextureInfoGame/HBoxInfoGame"]
+layout_mode = 2
+text = "CONTACT"
+
+[node name="LabelDayCount" type="Label" parent="HUDDay/TextureInfoGame/HBoxInfoGame"]
+layout_mode = 2
+text = "DAY 0"
+
+[node name="LabelTime" type="Label" parent="HUDDay/TextureInfoGame/HBoxInfoGame"]
+layout_mode = 2
+text = "24h16"
+
+[node name="EcranNoir" type="TextureRect" parent="HUDDay"]
+self_modulate = Color(1, 1, 1, 0)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_heysm")
+expand_mode = 5
+
+[node name="AnimDay" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_brvwk")
+}
+
 [connection signal="timeout" from="TimerBetweenLevels" to="." method="_on_timer_between_level_timeout"]
+[connection signal="animation_finished" from="AnimDay" to="." method="_on_anim_day_animation_finished"]

@@ -24,12 +24,8 @@ extends Node2D
 
 @onready var TimerLoadTask = $TimerLoadTask
 @onready var TimerPlayMode = $TimerPlayMode
-@onready var TimerEndDialogue = $TimerEndDialogue
 
 @onready var LabelTimeLeft = $HUD/LabelTimeLeft
-
-@onready var Dialogue = $HUD/Dialogue
-@onready var LabelDialogue = $HUD/Dialogue/LabelDialogue
 
 #Les variables exportées sont visibles dans l'inspecteur de l'objet.
 
@@ -42,8 +38,6 @@ extends Node2D
 
 #Sert à placer la prochaine fenêtre de tâche à côté de la dernière crée. Ce qui permet de la voir malgré qu'elle soit en dessous des autres fenêtres. En "y", sera ajouté la taille de la bar de tâche (ram).
 @export var offset_windows_when_create = Vector2(30,0)
-
-@export var dialogue_at_the_end_of_level = "Dialogue level"
 
 @export var game_scene : Node2D = null
 
@@ -89,7 +83,6 @@ func StartLevel():
 	
 	self.visible = true
 	HUD.visible = true
-	Dialogue.visible = false
 	CanvasSubWindows.visible = true
 	
 	TimerLoadTask.start()
@@ -292,10 +285,12 @@ func StopLevel():
 	
 	FondNoir.visible = true
 	#VBoxGameOver.visible = true
-	Dialogue.visible = true
 	
-	LabelDialogue.text = dialogue_at_the_end_of_level
-	TimerEndDialogue.start()
+	self.visible = false
+	HUD.visible = false
+	CanvasSubWindows.visible = false
+	emit_signal("level_finish")
+	level_finish.disconnect(game_scene._on_level_level_finish)
 
 
 #Fonction qui gère la fin du niveau en mode "Timer".
@@ -322,15 +317,6 @@ func _on_button_quit_pressed():
 #Est appelée quand le timer arrive à son terme dans le mode de jeu "Timer". Ce qui sonne la fin du niveau.
 func _on_timer_play_mode_timeout():
 	StopLevelOnTimerMode()
-
-
-func _on_timer_end_dialogue_timeout():
-	self.visible = false
-	HUD.visible = false
-	Dialogue.visible = false
-	CanvasSubWindows.visible = false
-	emit_signal("level_finish")
-	level_finish.disconnect(game_scene._on_level_level_finish)
 
 
 func DeleteAllWindows():

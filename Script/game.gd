@@ -3,6 +3,7 @@ extends Node2D
 
 @onready var TimerBetweenLevels = $TimerBetweenLevels
 
+@onready var AnimDay = $AnimDay
 
 @export var tab_all_level : Array[Node2D]
 
@@ -11,7 +12,8 @@ var current_level = 0
 
 
 func _ready():
-	TimerBetweenLevels.start()
+	#TimerBetweenLevels.start()
+	AnimDay.play("loading_desktop")
 
 
 func LaunchLevel():
@@ -36,3 +38,8 @@ func GameEnd():
 
 func _on_timer_between_level_timeout():
 	LaunchLevel()
+
+
+func _on_anim_day_animation_finished(anim_name):
+	if anim_name == "loading_desktop":
+		TimerBetweenLevels.start()
