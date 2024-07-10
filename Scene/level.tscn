@@ -1,0 +1,146 @@
+[gd_scene load_steps=3 format=3 uid="uid://bdengmo58dr5p"]
+
+[ext_resource type="Script" path="res://Script/level.gd" id="1_14mqd"]
+[ext_resource type="Texture2D" uid="uid://bqy2bnov2jb3f" path="res://Img/fondnoir.jpg" id="2_lpixl"]
+
+[node name="Level" type="Node2D"]
+script = ExtResource("1_14mqd")
+game_mode = 1
+
+[node name="TimerLoadTask" type="Timer" parent="."]
+wait_time = 2.0
+autostart = true
+
+[node name="TimerPlayMode" type="Timer" parent="."]
+one_shot = true
+
+[node name="CanvasSubWindows" type="CanvasLayer" parent="."]
+
+[node name="SubWindowsContainer" type="SubViewportContainer" parent="CanvasSubWindows"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="SubWindowsTask" type="SubViewport" parent="CanvasSubWindows/SubWindowsContainer"]
+disable_3d = true
+transparent_bg = true
+handle_input_locally = false
+render_target_update_mode = 4
+
+[node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="FondNoir" type="TextureRect" parent="HUD"]
+visible = false
+self_modulate = Color(1, 1, 1, 0.494118)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_lpixl")
+expand_mode = 5
+
+[node name="HBoxAltTab" type="HBoxContainer" parent="HUD"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 2
+alignment = 1
+
+[node name="HBoxTaskBar" type="HBoxContainer" parent="HUD"]
+visible = false
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="RamBar" type="ProgressBar" parent="HUD/HBoxTaskBar"]
+modulate = Color(0.729412, 0.658824, 0, 1)
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+size_flags_horizontal = 3
+step = 1.0
+value = 50.0
+rounded = true
+
+[node name="VBoxGameOver" type="VBoxContainer" parent="HUD"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="LabelGameOver" type="Label" parent="HUD/VBoxGameOver"]
+layout_mode = 2
+text = "Game Over"
+horizontal_alignment = 1
+vertical_alignment = 1
+uppercase = true
+
+[node name="ButtonRestart" type="Button" parent="HUD/VBoxGameOver"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 5
+text = "Restart"
+
+[node name="ButtonQuit" type="Button" parent="HUD/VBoxGameOver"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 5
+text = "Quit"
+
+[node name="VBoxObjectiveTask" type="VBoxContainer" parent="HUD"]
+anchors_preset = -1
+anchor_left = 0.939
+anchor_top = 0.094
+anchor_right = 0.939
+anchor_bottom = 0.094
+offset_left = -55.728
+offset_top = -48.912
+offset_right = 61.272
+offset_bottom = 0.0879974
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="LabelObjectivesTasks" type="Label" parent="HUD/VBoxObjectiveTask"]
+visible = false
+layout_mode = 2
+text = "Objectives : 15"
+
+[node name="LabelTasksFinish" type="Label" parent="HUD/VBoxObjectiveTask"]
+layout_mode = 2
+text = "Tasks done : 5 !
+Keep going !"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="LabelTimeLeft" type="Label" parent="HUD"]
+anchors_preset = -1
+anchor_left = 0.068
+anchor_top = 0.094
+anchor_right = 0.068
+anchor_bottom = 0.094
+offset_left = -53.336
+offset_top = -41.912
+offset_right = 53.664
+offset_bottom = 42.088
+vertical_alignment = 1
+
+[connection signal="timeout" from="TimerLoadTask" to="." method="_on_timer_load_task_timeout"]
+[connection signal="timeout" from="TimerPlayMode" to="." method="_on_timer_play_mode_timeout"]
+[connection signal="pressed" from="HUD/VBoxGameOver/ButtonRestart" to="." method="_on_button_restart_pressed"]
+[connection signal="pressed" from="HUD/VBoxGameOver/ButtonQuit" to="." method="_on_button_quit_pressed"]
