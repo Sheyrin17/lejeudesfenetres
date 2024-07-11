@@ -25,7 +25,7 @@ extends Node2D
 @onready var TimerLoadTask = $TimerLoadTask
 @onready var TimerPlayMode = $TimerPlayMode
 
-@onready var LabelTimeLeft = $HUD/LabelTimeLeft
+@onready var LabelTimeLeft = $HUD/VBoxObjectiveTask/LabelTimeLeft
 
 
 #Les variables exportées sont visibles dans l'inspecteur de l'objet.
@@ -63,7 +63,9 @@ var count_tasks_finish = 0
 var rng_number = RandomNumberGenerator.new()
 
 
-signal level_finish()
+signal level_finish
+
+signal finish_task
 
 
 #Fonction qui est appelée à l'initialisation de l'objet, ici la scène "Game".
@@ -79,8 +81,11 @@ func _ready():
 
 
 func StartLevel():
-	if game_scene != null:
-		level_finish.connect(game_scene._on_level_level_finish)
+	offset_windows_when_create.x += get_parent().get_parent().PopUpPA.get_size().x
+	offset_windows_when_create.y += get_parent().get_parent().TextureInfoGame.get_rect().size.y
+	
+	#if game_scene != null:
+		#level_finish.connect(game_scene._on_level_level_finish)
 	
 	self.visible = true
 	HUD.visible = true
@@ -182,6 +187,8 @@ func UpdateFocusOrderAltTab():
 func ThisWindowDelete(wdw):
 	#RamBar.value -= wdw.his_task_ram_charge
 	
+	emit_signal("finish_task")
+	
 	for i in tab_button_alttab:
 		if i.ref_window == wdw:
 			tab_button_alttab.erase(i)
@@ -192,7 +199,7 @@ func ThisWindowDelete(wdw):
 		tab_window_exist[0].grab_focus()
 	
 	count_tasks_finish += 1
-	LabelTasksFinish.text = "Tasks done : " + str(count_tasks_finish)+ " !\nKeep going !"
+	LabelTasksFinish.text = "Tasks done : " + str(count_tasks_finish)+ " !"
 	if game_mode == 1 and count_tasks_finish == nb_task_to_finish:
 		StopLevelOnTasksMode()
 
@@ -291,7 +298,7 @@ func StopLevel():
 	HUD.visible = false
 	CanvasSubWindows.visible = false
 	emit_signal("level_finish")
-	level_finish.disconnect(game_scene._on_level_level_finish)
+	#level_finish.disconnect(game_scene._on_level_level_finish)
 
 
 #Fonction qui gère la fin du niveau en mode "Timer".

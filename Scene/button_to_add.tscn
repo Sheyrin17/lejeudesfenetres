@@ -1,0 +1,4 @@
+[gd_scene format=3 uid="uid://drb71oqq61j4k"]
+
+[node name="ButtonToAdd" type="Button"]
+size_flags_horizontal = 0

@@ -1,4 +1,6 @@
-[gd_scene format=3 uid="uid://c1qpads6a50f3"]
+[gd_scene load_steps=2 format=3 uid="uid://c1qpads6a50f3"]
+
+[ext_resource type="Script" path="res://Script/label_message_friend.gd" id="1_ypxof"]
 
 [node name="LabelFriend" type="Label"]
 custom_minimum_size = Vector2(350, 0)
@@ -7,3 +9,4 @@ size_flags_vertical = 6
 text = "Hey ! Tu sais quoi ? fdsgfkjdhfkdhgnkfjngkdfng jfdngk jndf jgndj ngdkfj ngdkfjng"
 vertical_alignment = 1
 autowrap_mode = 2
+script = ExtResource("1_ypxof")

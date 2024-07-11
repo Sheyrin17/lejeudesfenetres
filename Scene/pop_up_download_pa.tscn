@@ -1,0 +1,34 @@
+[gd_scene load_steps=2 format=3 uid="uid://bemcsf24daysi"]
+
+[ext_resource type="Script" path="res://Script/PopUpDownloadPA.gd" id="1_a5adx"]
+
+[node name="PopUpDownloadPA" type="Window" node_paths=PackedStringArray("ProgressDownloadBar")]
+title = "Download PA"
+initial_position = 1
+size = Vector2i(400, 150)
+visible = false
+unresizable = true
+script = ExtResource("1_a5adx")
+ProgressDownloadBar = NodePath("VBoxDownloadPA/ProgressDownloadPA")
+
+[node name="VBoxDownloadPA" type="VBoxContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="LabelDownloadPA" type="Label" parent="VBoxDownloadPA"]
+layout_mode = 2
+text = "Download of Personnal Assistant !"
+horizontal_alignment = 1
+
+[node name="ProgressDownloadPA" type="ProgressBar" parent="VBoxDownloadPA"]
+layout_mode = 2
+
+[node name="TimerDownloadPA" type="Timer" parent="."]
+wait_time = 0.06
+
+[connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
+[connection signal="timeout" from="TimerDownloadPA" to="." method="_on_timer_download_pa_timeout"]
