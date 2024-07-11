@@ -8,6 +8,7 @@ size = Vector2i(400, 200)
 unresizable = true
 popup_window = true
 min_size = Vector2i(400, 200)
+keep_title_visible = true
 content_scale_mode = 1
 script = ExtResource("1_v113a")
 

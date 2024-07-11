@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://crml5l32k5rvk"]
+
+[ext_resource type="Script" path="res://Script/label_message_character.gd" id="1_8jthp"]
+
+[node name="LabelMessageCharacter" type="Label"]
+custom_minimum_size = Vector2(350, 0)
+offset_right = 350.0
+offset_bottom = 49.0
+size_flags_horizontal = 10
+text = "hf sdi sdiu fsid uhhfisduhf "
+horizontal_alignment = 2
+vertical_alignment = 1
+autowrap_mode = 2
+script = ExtResource("1_8jthp")

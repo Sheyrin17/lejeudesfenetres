@@ -27,6 +27,7 @@ extends Node2D
 
 @onready var LabelTimeLeft = $HUD/LabelTimeLeft
 
+
 #Les variables exportées sont visibles dans l'inspecteur de l'objet.
 
 #Variable qui permet de avoir le mode de jeu. "TIMER" signifie que le jeu se joue suivant un chronomètre. "TASKS" signifie que le jeu se joue suivant un nombre de tâche à atteindre.
