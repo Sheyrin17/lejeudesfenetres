@@ -196,29 +196,29 @@ _data = {
 [node name="Day1" type="Node2D" node_paths=PackedStringArray("tab_all_level")]
 script = ExtResource("1_1vh2p")
 tab_all_level = [NodePath("AllLevels/Level0"), NodePath("AllLevels/Level1")]
-tab_first_dialog_with_friend_phasedialog1 = Array[String](["Friend : Tu sais quoi ?", "Character : Feur;Coubeh", "Friend : Trop nul le boug", "Character : Tu veux me dire quoi ?", "Friend : Feur", "Character : Super, bonne ambiance", "Friend : Bon, tu veux un conseil pour mieux travailler et faire des trucs et bam le text est wrap ", "Character : Ouais vazy, envoie donc ton conseil de fou là, et bam le text est wrap ici aussi", "Friend : Ok", "Friend : Télécharge ça", "&Download Personnal Assistant"])
-tab_first_dialog_with_pa_phasedialog1 = Array[String](["PA : Bonjour, je suis IA", "Character : Bonjour IA, je suis", "PA : Tu veux bosser ?", "Character : Ok robot;Oui patron", "PA : Alors travail pendant < secondes", "&"])
+tab_first_dialog_with_friend_phasedialog1 = Array[String](["Friend : Tu sais quoi ?[1", "Character : Feur;Coubeh[1", "Friend : Trop nul le boug[1", "Character : Tu veux me dire quoi ?[1", "Friend : Feur[1", "Character : Super, bonne ambiance[1", "Friend : Bon, tu veux un conseil pour mieux travailler et faire des trucs et bam le text est wrap[1", "Character : Ouais vazy, envoie donc ton conseil de fou là, et bam le text est wrap ici aussi[1", "Friend : Ok[1", "Friend : Télécharge ça[1", "&Download Personnal Assistant"])
+tab_first_dialog_with_pa_phasedialog1 = Array[String](["PA : Bonjour, je suis IA[1", "Character : Bonjour IA, je suis[1", "PA : Tu veux bosser ?[1", "Character : Ok robot;Oui patron[1", "PA : Alors travail pendant < secondes[1", "&"])
 tab_pa_encouraging = Array[String](["Bj le sang", "Nice", "Tu cliques bien", "Omg ce clique"])
-tab_break_dialog = Array[String](["PA : Bien bossé ! ", "PA : C'est le moment de la pause", "Character : Merci férot", "Character : Test;Bouton", "PA : Quand tu seras prêt à retravailler, fais moi signe", "Character : Lets go;Prêt", "PA : Alors travail donc pendant < secondes.", "&"])
-tab_endday_dialog_with_pa = Array[String](["PA : Bein travaillé aujourd'hui", "Character : Merci", "PA : A demain", "Character : Oui", "&"])
-tab_endday_dialog_with_friend = Array[String](["Friend : Alors cette journée ?", "Character : Pas mal;Cool", "Friend : Cool, à demain", "Character : Oui", "&"])
+tab_break_dialog = Array[String](["PA : Bien bossé ![1", "PA : C'est le moment de la pause[1", "Character : Merci férot[1", "Character : Test;Bouton[1", "PA : Quand tu seras prêt à retravailler, fais moi signe[1", "Character : Lets go;Prêt[1", "PA : Alors travail donc pendant < secondes.[1", "&"])
+tab_endday_dialog_with_pa = Array[String](["PA : Bein travaillé aujourd'hui[1", "Character : Merci[1", "PA : A demain[1", "Character : Oui[1", "&"])
+tab_endday_dialog_with_friend = Array[String](["Friend : Alors cette journée ?[1", "Character : Pas mal;Cool[1", "Friend : Cool, à demain[1", "Character : Oui[1", "&"])
 
 [node name="AllLevels" type="Node2D" parent="."]
 
 [node name="Level0" parent="AllLevels" node_paths=PackedStringArray("game_scene") instance=ExtResource("2_y52fa")]
 game_mode = 0
-timer_playmode_wait_time = 5
+timer_playmode_wait_time = 1
 nb_task_to_finish = 1
 game_scene = NodePath("../..")
 
 [node name="Level1" parent="AllLevels" node_paths=PackedStringArray("game_scene") instance=ExtResource("2_y52fa")]
 game_mode = 0
-timer_playmode_wait_time = 10
+timer_playmode_wait_time = 1
 nb_task_to_finish = 5
 game_scene = NodePath("../..")
 
 [node name="TimerBetweenPhases" type="Timer" parent="."]
-wait_time = 0.5
+wait_time = 0.1
 one_shot = true
 
 [node name="HUDDay" type="CanvasLayer" parent="."]
@@ -350,6 +350,15 @@ offset_bottom = 600.0
 texture = ExtResource("3_heysm")
 expand_mode = 1
 
+[node name="LabelFriendWriting" type="Label" parent="PopUp/PopUpDiscussion/BackgroundAll"]
+visible = false
+layout_mode = 1
+offset_top = 225.0
+offset_right = 80.0
+offset_bottom = 248.0
+text = "writing . . ."
+vertical_alignment = 1
+
 [node name="BackgroundAnswer" type="TextureRect" parent="PopUp/PopUpDiscussion"]
 self_modulate = Color(1, 1, 1, 0.196078)
 offset_top = 250.0
@@ -381,6 +390,12 @@ layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 4
 text = "Coubeh"
+
+[node name="LabelCharacterWriting" type="Label" parent="PopUp/PopUpDiscussion/BackgroundAnswer/VBoxAnswer"]
+visible = false
+layout_mode = 2
+text = "writing . . ."
+vertical_alignment = 1
 
 [node name="ScrollMessage" type="ScrollContainer" parent="PopUp/PopUpDiscussion"]
 custom_minimum_size = Vector2(600, 250)
@@ -420,6 +435,14 @@ offset_bottom = 600.0
 texture = ExtResource("3_heysm")
 expand_mode = 1
 
+[node name="LabelPAWriting" type="Label" parent="PopUp/PopUpPA/BackgroundAll"]
+visible = false
+offset_top = 425.0
+offset_right = 80.0
+offset_bottom = 448.0
+text = "writing . . ."
+vertical_alignment = 1
+
 [node name="BackgroundAnswer" type="TextureRect" parent="PopUp/PopUpPA"]
 self_modulate = Color(1, 1, 1, 0.196078)
 offset_top = 450.0
@@ -452,6 +475,12 @@ size_flags_horizontal = 0
 size_flags_vertical = 4
 text = "Coubeh"
 
+[node name="LabelCharacterWriting" type="Label" parent="PopUp/PopUpPA/BackgroundAnswer/VBoxAnswer"]
+visible = false
+layout_mode = 2
+text = "writing . . ."
+vertical_alignment = 1
+
 [node name="ScrollMessagePA" type="ScrollContainer" parent="PopUp/PopUpPA"]
 custom_minimum_size = Vector2(300, 450)
 anchors_preset = 15
@@ -482,6 +511,7 @@ alignment = 1
 [connection signal="close_requested" from="PopUp/PopUpContacts" to="." method="_on_pop_up_contacts_close_requested"]
 [connection signal="pressed" from="PopUp/PopUpContacts/VBoxContacts/ButtonFriend" to="." method="_on_button_friend_pressed"]
 [connection signal="close_requested" from="PopUp/PopUpDiscussion" to="." method="_on_pop_up_discussion_close_requested"]
+[connection signal="visibility_changed" from="PopUp/PopUpDiscussion" to="." method="_on_pop_up_discussion_visibility_changed"]
 [connection signal="pressed" from="PopUp/PopUpDiscussion/BackgroundAnswer/VBoxAnswer/ButtonAnswerA" to="." method="_on_button_answer_a_pressed"]
 [connection signal="pressed" from="PopUp/PopUpDiscussion/BackgroundAnswer/VBoxAnswer/ButtonAnswerB" to="." method="_on_button_answer_b_pressed"]
 [connection signal="download_finish" from="PopUp/PopUpDownloadPA" to="." method="_on_pop_up_download_pa_download_finish"]
