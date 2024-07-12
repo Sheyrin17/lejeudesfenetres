@@ -25,6 +25,8 @@ extends Node2D
 
 @onready var ScrollMessage = $PopUp/PopUpDiscussion/ScrollMessage
 
+@onready var ScrollMessagePA = $PopUp/PopUpPA/ScrollMessagePA
+
 @onready var TextureInfoGame = $HUDDay/TextureInfoGame
 
 @export var tab_all_level : Array[Node2D]
@@ -239,6 +241,7 @@ func ChatWithFriend(current_index, tab_dialog):
 			TimerBetweenPhases.start()
 		
 		current_index += 1
+		ScrollMessage.NewMessage()
 	
 	return current_index
 
@@ -310,6 +313,7 @@ func ChatWithPA(current_index, tab_dialog):
 			TimerBetweenPhases.start()
 		
 		current_index += 1
+		ScrollMessagePA.NewMessage()
 	
 	return current_index
 
@@ -347,5 +351,6 @@ func OnAnyFinishTask():
 		var tmp_label_friend = LabelMessageFriend.instantiate()
 		tmp_label_friend.text = tab_pa_encouraging[tmp_index]
 		VBoxMessagePA.add_child(tmp_label_friend)
+		ScrollMessagePA.NewMessage()
 
 
