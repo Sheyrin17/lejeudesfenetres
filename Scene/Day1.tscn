@@ -196,12 +196,10 @@ _data = {
 [node name="Day1" type="Node2D" node_paths=PackedStringArray("tab_all_level")]
 script = ExtResource("1_1vh2p")
 tab_all_level = [NodePath("AllLevels/Level0"), NodePath("AllLevels/Level1")]
-tab_first_dialog_with_friend_phasedialog1 = Array[String](["Friend : Tu sais quoi ?[1", "Character : Feur;Coubeh[1", "Friend : Trop nul le boug[1", "Character : Tu veux me dire quoi ?[1", "Friend : Feur[1", "Character : Super, bonne ambiance[1", "Friend : Bon, tu veux un conseil pour mieux travailler et faire des trucs et bam le text est wrap[1", "Character : Ouais vazy, envoie donc ton conseil de fou là, et bam le text est wrap ici aussi[1", "Friend : Ok[1", "Friend : Télécharge ça[1", "&Download Personnal Assistant"])
-tab_first_dialog_with_pa_phasedialog1 = Array[String](["PA : Bonjour, je suis IA[1", "Character : Bonjour IA, je suis[1", "PA : Tu veux bosser ?[1", "Character : Ok robot;Oui patron[1", "PA : Alors travail pendant < secondes[1", "&"])
+tab_morning_dialog_phase = Array[String](["Friend : Yo, ça va ?", "CharacterToFriend : 1_Oui;2_De fou", "Friend : 1_Cool;2_Impensable", "CharacterToFriend : 1_Yes;2_Tavu;3_Des barres;4_Jure", "Friend : 1_A;2_B;3_C;4_D", "Friend : ~fin du test", "CharacterToFriend : C'est dur", "Friend : Télécharge ça", "&Download PA", "PA : Bonjour", "CharacterToPA : 1_Robot;2_IA", "PA : 1_a;2_b", "CharacterToPA : 1_a;2_b;3_c;4_d", "PA : ~Prêt à bosser < secondes ?", "CharacterToPA : 1_Prêt;2_Oui", "&"])
+tab_break_dialog_phase = Array[String](["Friend : mais non", "PA : Bien bossé", "CharacterToPA : 1_Merci;2_Sympa", "PA : ~Pause", "CharacterToPA : Oui", "PA : Recommence travail", "Friend : Prout", "CharacterToPA : 1_Ok;2_D'accord", "&"])
+tab_afternoon_dialog_phase = Array[String](["PA : OMG quel journée", "CharacterToPA : oui", "PA : demain", "CharacterToPA : oui", "Friend : alors", "CharacterToFriend : 1_bien;2_super", "Friend : ~cool", "CharacterToFriend : au revoir", "&"])
 tab_pa_encouraging = Array[String](["Bj le sang", "Nice", "Tu cliques bien", "Omg ce clique"])
-tab_break_dialog = Array[String](["PA : Bien bossé ![1", "PA : C'est le moment de la pause[1", "Character : Merci férot[1", "Character : Test;Bouton[1", "PA : Quand tu seras prêt à retravailler, fais moi signe[1", "Character : Lets go;Prêt[1", "PA : Alors travail donc pendant < secondes.[1", "&"])
-tab_endday_dialog_with_pa = Array[String](["PA : Bein travaillé aujourd'hui[1", "Character : Merci[1", "PA : A demain[1", "Character : Oui[1", "&"])
-tab_endday_dialog_with_friend = Array[String](["Friend : Alors cette journée ?[1", "Character : Pas mal;Cool[1", "Friend : Cool, à demain[1", "Character : Oui[1", "&"])
 
 [node name="AllLevels" type="Node2D" parent="."]
 
@@ -437,6 +435,7 @@ expand_mode = 1
 
 [node name="LabelPAWriting" type="Label" parent="PopUp/PopUpPA/BackgroundAll"]
 visible = false
+layout_mode = 0
 offset_top = 425.0
 offset_right = 80.0
 offset_bottom = 448.0

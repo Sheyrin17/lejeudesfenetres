@@ -37,28 +37,47 @@ extends Node2D
 
 @export var tab_all_level : Array[Node2D]
 
-@export var tab_first_dialog_with_friend_phasedialog1 : Array[String]
-var current_message_with_friend_phasedialog1 = 0
+@export var FriendSignature = "Friend : "
+@export var PASignature = "PA : "
+@export var CharacterToFriendSignature = "CharacterToFriend : "
+@export var CharacterToPASignature = "CharacterToPA : "
 
-@export var tab_first_dialog_with_pa_phasedialog1 : Array[String]
-var current_message_with_pa_phasedialog1 = 0
+@export var default_timer_writing_messages = 1
+
+@export var tab_morning_dialog_phase : Array[String]
+var current_message_morning_dialog_phase = 0
+
+@export var tab_break_dialog_phase : Array[String]
+var current_message_break_dialog_phase = 0
+
+@export var tab_afternoon_dialog_phase : Array[String]
+var current_message_afternoon_dialog_phase = 0
+
+#@export var tab_first_dialog_with_friend_phasedialog1 : Array[String]
+#var current_message_with_friend_phasedialog1 = 0
+#
+#@export var tab_first_dialog_with_pa_phasedialog1 : Array[String]
+#var current_message_with_pa_phasedialog1 = 0
 
 @export var tab_pa_encouraging : Array[String]
 
-@export var tab_break_dialog : Array[String]
-var current_message_break_dialog = 0
+#@export var tab_break_dialog : Array[String]
+#var current_message_break_dialog = 0
+#
+#@export var tab_endday_dialog_with_pa : Array[String]
+#var current_message_endday_dialog_with_pa = 0
 
-@export var tab_endday_dialog_with_pa : Array[String]
-var current_message_endday_dialog_with_pa = 0
+#@export var tab_endday_dialog_with_friend : Array[String]
+#var current_message_endday_dialog_with_friend = 0
 
-@export var tab_endday_dialog_with_friend : Array[String]
-var current_message_endday_dialog_with_friend = 0
+var choose_message = 0
+var tab_current_button : Array[String]
 
 var time_to_show_message = 0
 
 var is_making_a_choice = false
 
-enum PHASE { LOADING, DIALOG_FRIEND, LEVEL_1, DIALOG_BREAK, LEVEL_2, DIALOG_ENDDAY }
+enum PHASE { LOADING, DIALOG_MORNING, LEVEL_1, DIALOG_BREAK, LEVEL_2, DIALOG_AFTERNOON, ENDDAY }
 var current_phase = PHASE.LOADING
 
 var current_level = 0
@@ -78,7 +97,8 @@ func _ready():
 	#emit_signal("phase_changed")
 	AnimDay.play("loading_desktop")
 	
-	current_message_with_friend_phasedialog1 = await ChatWithFriend(current_message_with_friend_phasedialog1, tab_first_dialog_with_friend_phasedialog1)
+	#current_message_with_friend_phasedialog1 = await ChatWithFriend(current_message_with_friend_phasedialog1, tab_first_dialog_with_friend_phasedialog1)
+	current_message_morning_dialog_phase = await ChatWithSomeone(current_message_morning_dialog_phase, tab_morning_dialog_phase)
 
 
 #func LaunchLevel():
@@ -92,48 +112,72 @@ func GameEnd():
 
 func _on_timer_between_level_timeout():
 	if current_phase == PHASE.LOADING:
-		current_phase = PHASE.DIALOG_FRIEND
+		current_phase = PHASE.DIALOG_MORNING
 		emit_signal("phase_changed")
 	
-	if current_phase == PHASE.DIALOG_FRIEND and tab_first_dialog_with_friend_phasedialog1.size() != current_message_with_friend_phasedialog1 and !is_making_a_choice:
-		if !PopUpNotif.visible:
-			current_message_with_friend_phasedialog1 = await ChatWithFriend(current_message_with_friend_phasedialog1, tab_first_dialog_with_friend_phasedialog1)
-	
-	elif current_phase == PHASE.DIALOG_FRIEND and tab_first_dialog_with_friend_phasedialog1.size() == current_message_with_friend_phasedialog1 and !is_making_a_choice and (!PopUpDownloadBar.visible and !PopUpDiscussion.visible):
-		current_message_with_pa_phasedialog1 = await ChatWithPA(current_message_with_pa_phasedialog1, tab_first_dialog_with_pa_phasedialog1)
+	if current_phase == PHASE.DIALOG_MORNING:
+		if current_message_morning_dialog_phase != tab_morning_dialog_phase.size() and !is_making_a_choice:
+			current_message_morning_dialog_phase = await ChatWithSomeone(current_message_morning_dialog_phase, tab_morning_dialog_phase)
 		
-		if current_phase == PHASE.DIALOG_FRIEND and tab_first_dialog_with_pa_phasedialog1.size() == current_message_with_pa_phasedialog1 and !is_making_a_choice:
+		elif current_message_morning_dialog_phase == tab_morning_dialog_phase.size():
 			current_phase += 1
 			emit_signal("phase_changed")
+	
+	#if current_phase == PHASE.DIALOG_FRIEND and tab_first_dialog_with_friend_phasedialog1.size() != current_message_with_friend_phasedialog1 and !is_making_a_choice:
+		#if !PopUpNotif.visible:
+			#current_message_with_friend_phasedialog1 = await ChatWithFriend(current_message_with_friend_phasedialog1, tab_first_dialog_with_friend_phasedialog1)
+	#
+	#elif current_phase == PHASE.DIALOG_FRIEND and tab_first_dialog_with_friend_phasedialog1.size() == current_message_with_friend_phasedialog1 and !is_making_a_choice and (!PopUpDownloadBar.visible and !PopUpDiscussion.visible):
+		#current_message_with_pa_phasedialog1 = await ChatWithPA(current_message_with_pa_phasedialog1, tab_first_dialog_with_pa_phasedialog1)
+		#
+		#if current_phase == PHASE.DIALOG_FRIEND and tab_first_dialog_with_pa_phasedialog1.size() == current_message_with_pa_phasedialog1 and !is_making_a_choice:
+			#current_phase += 1
+			#emit_signal("phase_changed")
 	
 	if current_phase == PHASE.LEVEL_1:
 		pass
 	
-	if current_phase == PHASE.DIALOG_BREAK and !is_making_a_choice and tab_break_dialog.size() != current_message_break_dialog:
-		current_message_break_dialog = await ChatWithPA(current_message_break_dialog, tab_break_dialog)
+	if current_phase == PHASE.DIALOG_BREAK:
+		if current_message_break_dialog_phase != tab_break_dialog_phase.size() and !is_making_a_choice:
+			current_message_break_dialog_phase = await ChatWithSomeone(current_message_break_dialog_phase, tab_break_dialog_phase)
+		
+		elif current_message_break_dialog_phase == tab_break_dialog_phase.size():
+			current_phase += 1
+			emit_signal("phase_changed")
 	
-	elif current_phase == PHASE.DIALOG_BREAK and tab_break_dialog.size() == current_message_break_dialog and !is_making_a_choice:
-		current_phase += 1
-		emit_signal("phase_changed")
+	#if current_phase == PHASE.DIALOG_BREAK and !is_making_a_choice and tab_break_dialog.size() != current_message_break_dialog:
+		#current_message_break_dialog = await ChatWithPA(current_message_break_dialog, tab_break_dialog)
+	#
+	#elif current_phase == PHASE.DIALOG_BREAK and tab_break_dialog.size() == current_message_break_dialog and !is_making_a_choice:
+		#current_phase += 1
+		#emit_signal("phase_changed")
 	
 	if current_phase == PHASE.LEVEL_2:
 		pass
 	
-	if current_phase == PHASE.DIALOG_ENDDAY and tab_endday_dialog_with_pa.size() != current_message_endday_dialog_with_pa and !is_making_a_choice:
-		current_message_endday_dialog_with_pa = await ChatWithPA(current_message_endday_dialog_with_pa, tab_endday_dialog_with_pa)
-	
-	elif current_phase == PHASE.DIALOG_ENDDAY and tab_endday_dialog_with_pa.size() == current_message_endday_dialog_with_pa and !is_making_a_choice and current_message_endday_dialog_with_friend != tab_endday_dialog_with_friend.size():
-		if current_message_endday_dialog_with_friend == 0:
-			PopUpNotif.show()
-		current_message_endday_dialog_with_friend = await ChatWithFriend(current_message_endday_dialog_with_friend, tab_endday_dialog_with_friend)
-	
-	
-	elif current_phase == PHASE.DIALOG_ENDDAY and tab_endday_dialog_with_friend.size() == current_message_endday_dialog_with_friend and !is_making_a_choice:
+	if current_phase == PHASE.DIALOG_AFTERNOON:
+		if current_message_afternoon_dialog_phase != tab_afternoon_dialog_phase.size() and !is_making_a_choice:
+			current_message_afternoon_dialog_phase = await ChatWithSomeone(current_message_afternoon_dialog_phase, tab_afternoon_dialog_phase)
 		
-		PopUpDiscussion.hide()
-		PopUpPA.hide()
-		
-		AnimDay.play("end_day")
+		elif current_message_afternoon_dialog_phase == tab_afternoon_dialog_phase.size():
+			current_phase += 1
+			emit_signal("phase_changed")
+	
+	#if current_phase == PHASE.DIALOG_ENDDAY and tab_endday_dialog_with_pa.size() != current_message_endday_dialog_with_pa and !is_making_a_choice:
+		#current_message_endday_dialog_with_pa = await ChatWithPA(current_message_endday_dialog_with_pa, tab_endday_dialog_with_pa)
+	#
+	#elif current_phase == PHASE.DIALOG_ENDDAY and tab_endday_dialog_with_pa.size() == current_message_endday_dialog_with_pa and !is_making_a_choice and current_message_endday_dialog_with_friend != tab_endday_dialog_with_friend.size():
+		#if current_message_endday_dialog_with_friend == 0:
+			#PopUpNotif.show()
+		#current_message_endday_dialog_with_friend = await ChatWithFriend(current_message_endday_dialog_with_friend, tab_endday_dialog_with_friend)
+	#
+	#
+	#elif current_phase == PHASE.DIALOG_ENDDAY and tab_endday_dialog_with_friend.size() == current_message_endday_dialog_with_friend and !is_making_a_choice:
+		#
+		#PopUpDiscussion.hide()
+		#PopUpPA.hide()
+		#
+		#AnimDay.play("end_day")
 
 
 func _on_anim_day_animation_finished(anim_name):
@@ -153,21 +197,29 @@ func _on_phase_changed():
 		PHASE.LOADING:
 			pass
 		
-		PHASE.DIALOG_FRIEND:
-			PopUpNotif.show()
-			current_message_with_friend_phasedialog1 = await ChatWithFriend(current_message_with_friend_phasedialog1, tab_first_dialog_with_friend_phasedialog1)
+		PHASE.DIALOG_MORNING:
+			#PopUpNotif.show()
+			#current_message_with_friend_phasedialog1 = await ChatWithFriend(current_message_with_friend_phasedialog1, tab_first_dialog_with_friend_phasedialog1)
+			current_message_morning_dialog_phase = await ChatWithSomeone(current_message_morning_dialog_phase, tab_morning_dialog_phase)
 		
 		PHASE.LEVEL_1:
 			tab_all_level[current_level].StartLevel()
 		
 		PHASE.DIALOG_BREAK:
-			current_message_break_dialog = await ChatWithPA(current_message_break_dialog, tab_break_dialog)
+			#current_message_break_dialog = await ChatWithPA(current_message_break_dialog, tab_break_dialog)
+			current_message_break_dialog_phase = await ChatWithSomeone(current_message_break_dialog_phase, tab_break_dialog_phase)
 		
 		PHASE.LEVEL_2:
 			tab_all_level[current_level].StartLevel()
 		
-		PHASE.DIALOG_ENDDAY:
-			current_message_endday_dialog_with_pa = await ChatWithPA(current_message_endday_dialog_with_pa, tab_endday_dialog_with_pa)
+		PHASE.DIALOG_AFTERNOON:
+			#current_message_endday_dialog_with_pa = await ChatWithPA(current_message_endday_dialog_with_pa, tab_endday_dialog_with_pa)
+			current_message_afternoon_dialog_phase = await ChatWithSomeone(current_message_afternoon_dialog_phase, tab_afternoon_dialog_phase)
+		
+		PHASE.ENDDAY:
+			PopUpDiscussion.hide()
+			PopUpPA.hide()
+			AnimDay.play("end_day")
 
 
 func _on_button_contact_pressed():
@@ -193,12 +245,14 @@ func _on_button_answer_a_pressed():
 	CharacterSendMessageButton(ButtonAnswerA, ButtonAnswerA.text)
 	ButtonAnswerA.visible = false
 	ButtonAnswerB.visible = false
+	choose_message = tab_current_button[0].split("_")[0].to_int()
 
 
 func _on_button_answer_b_pressed():
 	CharacterSendMessageButton(ButtonAnswerB, ButtonAnswerB.text)
 	ButtonAnswerA.visible = false
 	ButtonAnswerB.visible = false
+	choose_message = tab_current_button[1].split("_")[0].to_int()
 
 
 func CharacterSendMessageButton(button, message):
@@ -224,32 +278,58 @@ func CharacterSendMessageButton(button, message):
 		ScrollMessagePA.NewMessage()
 	
 	is_making_a_choice = false
+	tab_current_button = []
 	TimerBetweenPhases.start()
 
 
-func ChatWithFriend(current_index, tab_dialog):
+func SetWritingTime(message):
+	var tmp_split_message_time = message.split("[")
+		
+	time_to_show_message = tmp_split_message_time[1].to_int()
+	message = tmp_split_message_time[0]
+	
+	return message
+
+
+func ChatWithSomeone(current_index, tab_dialog):
+	time_to_show_message = default_timer_writing_messages
+	
 	if current_index < tab_dialog.size():
-		if tab_dialog[current_index].begins_with("Character : "):
-			
-			var tmp_message = ""
-			if tab_dialog[current_index].contains("["):
-				var tmp_message_time = tab_dialog[current_index].erase(0,12)
-				var tmp_split_message_time = tmp_message_time.split("[")
-				
-				tmp_message = tmp_split_message_time[0]
-				time_to_show_message = tmp_split_message_time[1].to_int()
-			
-			else:
-				tmp_message = tab_dialog[current_index].erase(0,12)
+		var tmp_message = tab_dialog[current_index]
+		if tmp_message.contains("["):
+			tmp_message = SetWritingTime(tmp_message)
+		
+		
+		if tmp_message.begins_with(CharacterToFriendSignature):
+			tmp_message = tmp_message.erase(0, CharacterToFriendSignature.length())
 			
 			if tmp_message.contains(";"):
 				var button_messages = tmp_message.split(";")
+				print(choose_message)
 				
-				ButtonAnswerA.visible = true
-				ButtonAnswerA.text = button_messages[0]
+				if choose_message == 0:
+					ButtonAnswerA.visible = true
+					ButtonAnswerA.text = button_messages[0].erase(0,2)
+					
+					ButtonAnswerB.visible = true
+					ButtonAnswerB.text = button_messages[1].erase(0,2)
+					
+					tab_current_button = [button_messages[0], button_messages[1]]
 				
-				ButtonAnswerB.visible = true
-				ButtonAnswerB.text = button_messages[1]
+				elif button_messages.size() > 2 :
+					ButtonAnswerA.visible = true
+					ButtonAnswerA.text = button_messages[(choose_message * 2) -2].erase(0,2)
+					
+					ButtonAnswerB.visible = true
+					ButtonAnswerB.text = button_messages[(choose_message * 2) - 1].erase(0,2)
+					
+					tab_current_button = [button_messages[(choose_message * 2) -2], button_messages[(choose_message * 2) -1]]
+				
+				#ButtonAnswerA.visible = true
+				#ButtonAnswerA.text = button_messages[0]
+				#
+				#ButtonAnswerB.visible = true
+				#ButtonAnswerB.text = button_messages[1]
 				
 				is_making_a_choice = true
 			
@@ -260,122 +340,40 @@ func ChatWithFriend(current_index, tab_dialog):
 				await get_tree().create_timer(time_to_show_message).timeout
 				LabelCharacterWriting.visible = false
 				VBoxMessage.add_child(tmp_message_character)
-				
 		
-		elif tab_dialog[current_index].begins_with("Friend : "):
+		
+		if tmp_message.begins_with(FriendSignature):
+			tmp_message = tmp_message.erase(0, FriendSignature.length())
 			
-			var tmp_message = ""
-			if tab_dialog[current_index].contains("["):
-				var tmp_message_time = tab_dialog[current_index].erase(0,9)
-				var tmp_split_message_time = tmp_message_time.split("[")
-				
-				tmp_message = tmp_split_message_time[0]
-				time_to_show_message = tmp_split_message_time[1].to_int()
-			else:
-				tmp_message = tab_dialog[current_index].erase(0,9)
-				
+			if tmp_message.contains(";"):
+				var tmp_all = tmp_message.split(";")
+				tmp_message = tmp_all[choose_message-1].erase(0,2)
+			
+			if tmp_message.contains("~"):
+				choose_message = 0
+				tmp_message = tmp_message.erase(0,1)
+			
 			var tmp_label_friend = LabelMessageFriend.instantiate()
 			tmp_label_friend.text = tmp_message
 			LabelFriendWriting.visible = true
 			await get_tree().create_timer(time_to_show_message).timeout
 			LabelFriendWriting.visible = false
 			VBoxMessage.add_child(tmp_label_friend)
-		
-		elif tab_dialog[current_index].contains("&"):
-			if tab_dialog[current_index].length() > 1:
-				var tmp_button = ButtonToAdd.instantiate()
-				tmp_button.text = tab_dialog[current_index].erase(0,1)
-				tmp_button.pressed.connect(PressDownloadPA)
-				VBoxMessage.add_child(tmp_button)
-		
-		current_index += 1
-		ScrollMessage.NewMessage()
-		TimerBetweenPhases.start()
-	
-	return current_index
-
-
-func PressDownloadPA():
-	var tmp_button = null
-	for i in VBoxMessage.get_children():
-		if i is Button:
-			tmp_button = i
-			tmp_button.pressed.disconnect(PressDownloadPA)
-	PopUpDownloadBar.show()
-
-
-func _on_pop_up_download_pa_download_finish():
-	PopUpContacts.hide()
-	PopUpDiscussion.hide()
-	PopUpDownloadBar.hide()
-	TimerBetweenPhases.start()
-	PopUpPA.show()
-
-
-func ChatWithPA(current_index, tab_dialog):
-	if current_index < tab_dialog.size():
-		if tab_dialog[current_index].begins_with("Character : "):
-			var tmp_message = ""
 			
-			if tab_dialog[current_index].contains("["):
-				var tmp_message_time = tab_dialog[current_index].erase(0,12)
-				var tmp_split_message_time = tmp_message_time.split("[")
-				
-				tmp_message = tmp_split_message_time[0]
-				time_to_show_message = tmp_split_message_time[1].to_int()
-			
-			else:
-				tmp_message = tab_dialog[current_index].erase(0,12)
+			if !PopUpDiscussion.visible:
+				PopUpNotif.show()
+		
+		
+		if tmp_message.begins_with(PASignature):
+			tmp_message = tmp_message.erase(0, PASignature.length())
 			
 			if tmp_message.contains(";"):
-				var button_messages = tmp_message.split(";")
-				
-				ButtonAnswerPAA.visible = true
-				ButtonAnswerPAA.text = button_messages[0]
-				
-				ButtonAnswerPAB.visible = true
-				ButtonAnswerPAB.text = button_messages[1]
-				
-				is_making_a_choice = true
+				var tmp_all = tmp_message.split(";")
+				tmp_message = tmp_all[choose_message-1].erase(0,2)
 			
-			else:
-				var tmp_message_character = LabelMessageCharacter.instantiate()
-				tmp_message_character.text = tmp_message
-				LabelCharacterWritingPA.visible = true
-				await get_tree().create_timer(time_to_show_message).timeout
-				LabelCharacterWritingPA.visible = false
-				VBoxMessagePA.add_child(tmp_message_character)
-		
-		#elif tab_dialog[current_index].contains("<"):
-			#var tmp_message = tab_dialog[current_index].erase(0,5)
-			#
-			#var tmp_ = tmp_message.split("<")
-			#var tmp_1 = tmp_[0]
-			#var tmp_2 = tmp_[1]
-			#
-			#if tab_all_level[current_level].game_mode == 0:
-				#tmp_1 = tmp_1 + str(tab_all_level[current_level].timer_playmode_wait_time) + tmp_2
-			#
-			#elif tab_all_level[current_level].game_mode == 1:
-				#tmp_1 = tmp_1 + str(tab_all_level[current_level].nb_task_to_finish) + tmp_2
-			#
-			#var tmp_label_friend = LabelMessageFriend.instantiate()
-			#tmp_label_friend.text = tmp_1
-			#VBoxMessagePA.add_child(tmp_label_friend)
-			#TimerBetweenPhases.start()
-		
-		elif tab_dialog[current_index].begins_with("PA : "):
-			var tmp_message = ""
-			
-			if tab_dialog[current_index].contains("["):
-				var tmp_message_time = tab_dialog[current_index].erase(0,5)
-				var tmp_split_message_time = tmp_message_time.split("[")
-				
-				tmp_message = tmp_split_message_time[0]
-				time_to_show_message = tmp_split_message_time[1].to_int()
-			
-			else:
-				tmp_message = tab_dialog[current_index].erase(0,5)
+			if tmp_message.contains("~"):
+				choose_message = 0
+				tmp_message = tmp_message.erase(0,1)
 			
 			if tmp_message.contains("<"):
 				var tmp_ = tmp_message.split("<")
@@ -397,26 +395,259 @@ func ChatWithPA(current_index, tab_dialog):
 			LabelPAWriting.visible = false
 			VBoxMessagePA.add_child(tmp_label_friend)
 		
-		elif tab_dialog[current_index].contains("&"):
-			pass
+		
+		if tmp_message.begins_with(CharacterToPASignature):
+			tmp_message = tmp_message.erase(0, CharacterToPASignature.length())
+			
+			if tmp_message.contains(";"):
+				var button_messages = tmp_message.split(";")
+				print(choose_message)
+				
+				if choose_message == 0:
+					ButtonAnswerPAA.visible = true
+					ButtonAnswerPAA.text = button_messages[0].erase(0,2)
+					
+					ButtonAnswerPAB.visible = true
+					ButtonAnswerPAB.text = button_messages[1].erase(0,2)
+					
+					tab_current_button = [button_messages[0], button_messages[1]]
+				
+				elif button_messages.size() > 2 :
+					ButtonAnswerPAA.visible = true
+					ButtonAnswerPAA.text = button_messages[(choose_message * 2) -2].erase(0,2)
+					
+					ButtonAnswerPAB.visible = true
+					ButtonAnswerPAB.text = button_messages[(choose_message * 2) - 1].erase(0,2)
+					
+					tab_current_button = [button_messages[(choose_message * 2) -2], button_messages[(choose_message * 2) -1]]
+				
+				#ButtonAnswerA.visible = true
+				#ButtonAnswerA.text = button_messages[0]
+				#
+				#ButtonAnswerB.visible = true
+				#ButtonAnswerB.text = button_messages[1]
+				
+				is_making_a_choice = true
+			
+			else:
+				var tmp_message_character = LabelMessageCharacter.instantiate()
+				tmp_message_character.text = tmp_message
+				LabelCharacterWritingPA.visible = true
+				await get_tree().create_timer(time_to_show_message).timeout
+				LabelCharacterWritingPA.visible = false
+				VBoxMessagePA.add_child(tmp_message_character)
+		
+		
+		elif tmp_message.contains("&"):
+			if tmp_message.length() > 1:
+				var tmp_button = ButtonToAdd.instantiate()
+				tmp_button.text = tmp_message.erase(0,1)
+				tmp_button.pressed.connect(PressDownloadPA)
+				VBoxMessage.add_child(tmp_button)
+			
+			tab_current_button = []
+			choose_message = 0
 		
 		current_index += 1
+		ScrollMessage.NewMessage()
 		ScrollMessagePA.NewMessage()
 		TimerBetweenPhases.start()
 	
 	return current_index
 
 
+#func ChatWithFriend(current_index, tab_dialog):
+	#if current_index < tab_dialog.size():
+		#if tab_dialog[current_index].begins_with("Character : "):
+			#
+			#var tmp_message = ""
+			#if tab_dialog[current_index].contains("["):
+				#var tmp_message_time = tab_dialog[current_index].erase(0,12)
+				#var tmp_split_message_time = tmp_message_time.split("[")
+				#
+				#tmp_message = tmp_split_message_time[0]
+				#time_to_show_message = tmp_split_message_time[1].to_int()
+			#
+			#else:
+				#tmp_message = tab_dialog[current_index].erase(0,12)
+			#
+			#if tmp_message.contains(";"):
+				#var button_messages = tmp_message.split(";")
+				#
+				#ButtonAnswerA.visible = true
+				#ButtonAnswerA.text = button_messages[0]
+				#
+				#ButtonAnswerB.visible = true
+				#ButtonAnswerB.text = button_messages[1]
+				#
+				#is_making_a_choice = true
+			#
+			#else:
+				#var tmp_message_character = LabelMessageCharacter.instantiate()
+				#tmp_message_character.text = tmp_message
+				#LabelCharacterWriting.visible = true
+				#await get_tree().create_timer(time_to_show_message).timeout
+				#LabelCharacterWriting.visible = false
+				#VBoxMessage.add_child(tmp_message_character)
+				#
+		#
+		#elif tab_dialog[current_index].begins_with("Friend : "):
+			#
+			#var tmp_message = ""
+			#if tab_dialog[current_index].contains("["):
+				#var tmp_message_time = tab_dialog[current_index].erase(0,9)
+				#var tmp_split_message_time = tmp_message_time.split("[")
+				#
+				#tmp_message = tmp_split_message_time[0]
+				#time_to_show_message = tmp_split_message_time[1].to_int()
+			#else:
+				#tmp_message = tab_dialog[current_index].erase(0,9)
+				#
+			#var tmp_label_friend = LabelMessageFriend.instantiate()
+			#tmp_label_friend.text = tmp_message
+			#LabelFriendWriting.visible = true
+			#await get_tree().create_timer(time_to_show_message).timeout
+			#LabelFriendWriting.visible = false
+			#VBoxMessage.add_child(tmp_label_friend)
+		#
+		#elif tab_dialog[current_index].contains("&"):
+			#if tab_dialog[current_index].length() > 1:
+				#var tmp_button = ButtonToAdd.instantiate()
+				#tmp_button.text = tab_dialog[current_index].erase(0,1)
+				#tmp_button.pressed.connect(PressDownloadPA)
+				#VBoxMessage.add_child(tmp_button)
+		#
+		#current_index += 1
+		#ScrollMessage.NewMessage()
+		#TimerBetweenPhases.start()
+	#
+	#return current_index
+
+
+func PressDownloadPA():
+	var tmp_button = null
+	for i in VBoxMessage.get_children():
+		if i is Button:
+			tmp_button = i
+			tmp_button.pressed.disconnect(PressDownloadPA)
+	PopUpDownloadBar.show()
+
+
+func _on_pop_up_download_pa_download_finish():
+	PopUpContacts.hide()
+	PopUpDiscussion.hide()
+	PopUpDownloadBar.hide()
+	TimerBetweenPhases.start()
+	PopUpPA.show()
+
+
+#func ChatWithPA(current_index, tab_dialog):
+	#if current_index < tab_dialog.size():
+		#if tab_dialog[current_index].begins_with("Character : "):
+			#var tmp_message = ""
+			#
+			#if tab_dialog[current_index].contains("["):
+				#var tmp_message_time = tab_dialog[current_index].erase(0,12)
+				#var tmp_split_message_time = tmp_message_time.split("[")
+				#
+				#tmp_message = tmp_split_message_time[0]
+				#time_to_show_message = tmp_split_message_time[1].to_int()
+			#
+			#else:
+				#tmp_message = tab_dialog[current_index].erase(0,12)
+			#
+			#if tmp_message.contains(";"):
+				#var button_messages = tmp_message.split(";")
+				#
+				#ButtonAnswerPAA.visible = true
+				#ButtonAnswerPAA.text = button_messages[0]
+				#
+				#ButtonAnswerPAB.visible = true
+				#ButtonAnswerPAB.text = button_messages[1]
+				#
+				#is_making_a_choice = true
+			#
+			#else:
+				#var tmp_message_character = LabelMessageCharacter.instantiate()
+				#tmp_message_character.text = tmp_message
+				#LabelCharacterWritingPA.visible = true
+				#await get_tree().create_timer(time_to_show_message).timeout
+				#LabelCharacterWritingPA.visible = false
+				#VBoxMessagePA.add_child(tmp_message_character)
+		#
+		##elif tab_dialog[current_index].contains("<"):
+			##var tmp_message = tab_dialog[current_index].erase(0,5)
+			##
+			##var tmp_ = tmp_message.split("<")
+			##var tmp_1 = tmp_[0]
+			##var tmp_2 = tmp_[1]
+			##
+			##if tab_all_level[current_level].game_mode == 0:
+				##tmp_1 = tmp_1 + str(tab_all_level[current_level].timer_playmode_wait_time) + tmp_2
+			##
+			##elif tab_all_level[current_level].game_mode == 1:
+				##tmp_1 = tmp_1 + str(tab_all_level[current_level].nb_task_to_finish) + tmp_2
+			##
+			##var tmp_label_friend = LabelMessageFriend.instantiate()
+			##tmp_label_friend.text = tmp_1
+			##VBoxMessagePA.add_child(tmp_label_friend)
+			##TimerBetweenPhases.start()
+		#
+		#elif tab_dialog[current_index].begins_with("PA : "):
+			#var tmp_message = ""
+			#
+			#if tab_dialog[current_index].contains("["):
+				#var tmp_message_time = tab_dialog[current_index].erase(0,5)
+				#var tmp_split_message_time = tmp_message_time.split("[")
+				#
+				#tmp_message = tmp_split_message_time[0]
+				#time_to_show_message = tmp_split_message_time[1].to_int()
+			#
+			#else:
+				#tmp_message = tab_dialog[current_index].erase(0,5)
+			#
+			#if tmp_message.contains("<"):
+				#var tmp_ = tmp_message.split("<")
+				#var tmp_1 = tmp_[0]
+				#var tmp_2 = tmp_[1]
+				#
+				#if tab_all_level[current_level].game_mode == 0:
+					#tmp_1 = tmp_1 + str(tab_all_level[current_level].timer_playmode_wait_time) + tmp_2
+				#
+				#elif tab_all_level[current_level].game_mode == 1:
+					#tmp_1 = tmp_1 + str(tab_all_level[current_level].nb_task_to_finish) + tmp_2
+				#
+				#tmp_message = tmp_1
+			#
+			#var tmp_label_friend = LabelMessageFriend.instantiate()
+			#tmp_label_friend.text = tmp_message
+			#LabelPAWriting.visible = true
+			#await get_tree().create_timer(time_to_show_message).timeout
+			#LabelPAWriting.visible = false
+			#VBoxMessagePA.add_child(tmp_label_friend)
+		#
+		#elif tab_dialog[current_index].contains("&"):
+			#pass
+		#
+		#current_index += 1
+		#ScrollMessagePA.NewMessage()
+		#TimerBetweenPhases.start()
+	#
+	#return current_index
+
+
 func _on_button_answer_paa_pressed():
 	CharacterSendMessageButton(ButtonAnswerPAA, ButtonAnswerPAA.text)
 	ButtonAnswerPAA.visible = false
 	ButtonAnswerPAB.visible = false
+	choose_message = tab_current_button[0].split("_")[0].to_int()
 
 
 func _on_button_answer_pab_pressed():
 	CharacterSendMessageButton(ButtonAnswerPAB, ButtonAnswerPAB.text)
 	ButtonAnswerPAA.visible = false
 	ButtonAnswerPAB.visible = false
+	choose_message = tab_current_button[1].split("_")[0].to_int()
 
 
 func _on_level_0_level_finish():
