@@ -1,9 +1,9 @@
 [gd_scene load_steps=3 format=3 uid="uid://bdengmo58dr5p"]
 
-[ext_resource type="Script" path="res://Script/level.gd" id="1_14mqd"]
+[ext_resource type="Script" path="res://Script/gameplay.gd" id="1_14mqd"]
 [ext_resource type="Texture2D" uid="uid://bqy2bnov2jb3f" path="res://Img/fondnoir.jpg" id="2_lpixl"]
 
-[node name="Level" type="Node2D" groups=["Level"]]
+[node name="Gameplay" type="Node2D" groups=["Level"]]
 visible = false
 script = ExtResource("1_14mqd")
 game_mode = 1

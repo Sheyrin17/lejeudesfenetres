@@ -1,7 +1,7 @@
 [gd_scene load_steps=11 format=3 uid="uid://b8jn46hub5n1f"]
 
 [ext_resource type="Script" path="res://Script/game.gd" id="1_1vh2p"]
-[ext_resource type="PackedScene" uid="uid://bdengmo58dr5p" path="res://Scene/level.tscn" id="2_y52fa"]
+[ext_resource type="PackedScene" uid="uid://bdengmo58dr5p" path="res://Scene/gameplay.tscn" id="2_y52fa"]
 [ext_resource type="Texture2D" uid="uid://bqy2bnov2jb3f" path="res://Img/fondnoir.jpg" id="3_heysm"]
 [ext_resource type="Script" path="res://Script/ScrollMessage.gd" id="4_ft80i"]
 [ext_resource type="PackedScene" uid="uid://bemcsf24daysi" path="res://Scene/pop_up_download_pa.tscn" id="5_hnbuv"]
@@ -195,27 +195,28 @@ _data = {
 
 [node name="Day1" type="Node2D" node_paths=PackedStringArray("tab_all_level")]
 script = ExtResource("1_1vh2p")
-tab_all_level = [NodePath("AllLevels/Level0"), NodePath("AllLevels/Level1")]
+tab_all_level = [NodePath("AllGameplay/Gameplay0"), NodePath("AllGameplay/Gameplay1")]
 tab_morning_dialog_phase = Array[String](["Friend : Yo, ça va ?", "CharacterToFriend : 1_Oui;2_De fou", "Friend : 1_Cool;2_Impensable", "CharacterToFriend : 1_Yes;2_Tavu;3_Des barres;4_Jure", "Friend : 1_A;2_B;3_C;4_D", "Friend : ~fin du test", "CharacterToFriend : C'est dur", "Friend : Télécharge ça", "&Download PA", "PA : Bonjour", "CharacterToPA : 1_Robot;2_IA", "PA : 1_a;2_b", "CharacterToPA : 1_a;2_b;3_c;4_d", "PA : ~Prêt à bosser < secondes ?", "CharacterToPA : 1_Prêt;2_Oui", "&"])
 tab_break_dialog_phase = Array[String](["Friend : mais non", "PA : Bien bossé", "CharacterToPA : 1_Merci;2_Sympa", "PA : ~Pause", "CharacterToPA : Oui", "PA : Recommence travail", "Friend : Prout", "CharacterToPA : 1_Ok;2_D'accord", "&"])
 tab_afternoon_dialog_phase = Array[String](["PA : OMG quel journée", "CharacterToPA : oui", "PA : demain", "CharacterToPA : oui", "Friend : alors", "CharacterToFriend : 1_bien;2_super", "Friend : ~cool", "CharacterToFriend : au revoir", "&"])
 tab_pa_encouraging = Array[String](["Bj le sang", "Nice", "Tu cliques bien", "Omg ce clique"])
 
-[node name="AllLevels" type="Node2D" parent="."]
+[node name="AllGameplay" type="Node2D" parent="."]
 
-[node name="Level0" parent="AllLevels" node_paths=PackedStringArray("game_scene") instance=ExtResource("2_y52fa")]
+[node name="Gameplay0" parent="AllGameplay" node_paths=PackedStringArray("game_scene") instance=ExtResource("2_y52fa")]
 game_mode = 0
 timer_playmode_wait_time = 1
 nb_task_to_finish = 1
 game_scene = NodePath("../..")
 
-[node name="Level1" parent="AllLevels" node_paths=PackedStringArray("game_scene") instance=ExtResource("2_y52fa")]
+[node name="Gameplay1" parent="AllGameplay" node_paths=PackedStringArray("game_scene") instance=ExtResource("2_y52fa")]
 game_mode = 0
 timer_playmode_wait_time = 1
 nb_task_to_finish = 5
 game_scene = NodePath("../..")
 
 [node name="TimerBetweenPhases" type="Timer" parent="."]
+process_callback = 0
 wait_time = 0.1
 one_shot = true
 
@@ -499,10 +500,10 @@ theme_override_constants/separation = 15
 alignment = 1
 
 [connection signal="phase_changed" from="." to="." method="_on_phase_changed"]
-[connection signal="finish_task" from="AllLevels/Level0" to="." method="OnAnyFinishTask"]
-[connection signal="level_finish" from="AllLevels/Level0" to="." method="_on_level_0_level_finish"]
-[connection signal="finish_task" from="AllLevels/Level1" to="." method="OnAnyFinishTask"]
-[connection signal="level_finish" from="AllLevels/Level1" to="." method="_on_level_1_level_finish"]
+[connection signal="finish_task" from="AllGameplay/Gameplay0" to="." method="OnAnyFinishTask"]
+[connection signal="level_finish" from="AllGameplay/Gameplay0" to="." method="_on_level_0_level_finish"]
+[connection signal="finish_task" from="AllGameplay/Gameplay1" to="." method="OnAnyFinishTask"]
+[connection signal="level_finish" from="AllGameplay/Gameplay1" to="." method="_on_level_1_level_finish"]
 [connection signal="timeout" from="TimerBetweenPhases" to="." method="_on_timer_between_level_timeout"]
 [connection signal="pressed" from="HUDDay/TextureInfoGame/HBoxInfoGame/ButtonContact" to="." method="_on_button_contact_pressed"]
 [connection signal="animation_finished" from="AnimDay" to="." method="_on_anim_day_animation_finished"]
