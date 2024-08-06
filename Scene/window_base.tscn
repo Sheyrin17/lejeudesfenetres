@@ -1,0 +1,78 @@
+[gd_scene load_steps=5 format=3 uid="uid://ck08ek7fcon1t"]
+
+[ext_resource type="Script" path="res://Script/window_base.gd" id="1_rrill"]
+[ext_resource type="Texture2D" uid="uid://bqy2bnov2jb3f" path="res://Img/fondnoir.jpg" id="1_vagsk"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1id5n"]
+bg_color = Color(1, 1, 1, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.168627, 0.8, 0.027451, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tud1w"]
+bg_color = Color(1, 1, 1, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.8, 0.129412, 0.027451, 1)
+
+[node name="WindowBase" type="TextureRect"]
+self_modulate = Color(1, 1, 1, 0.392157)
+offset_right = 324.0
+offset_bottom = 229.0
+texture = ExtResource("1_vagsk")
+expand_mode = 1
+script = ExtResource("1_rrill")
+
+[node name="TitleBar" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 9.0
+grow_horizontal = 2
+texture = ExtResource("1_vagsk")
+expand_mode = 1
+
+[node name="Ttile" type="Label" parent="TitleBar"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -20.0
+offset_top = -1.0
+offset_right = 20.0
+offset_bottom = 22.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 8
+text = "TITLE"
+horizontal_alignment = 1
+
+[node name="HBoxIcons" type="HBoxContainer" parent="TitleBar"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -40.0
+offset_bottom = 40.0
+grow_horizontal = 0
+alignment = 1
+
+[node name="Resize" type="Button" parent="TitleBar/HBoxIcons"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+theme_override_styles/normal = SubResource("StyleBoxFlat_1id5n")
+
+[node name="Close" type="Button" parent="TitleBar/HBoxIcons"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+theme_override_styles/normal = SubResource("StyleBoxFlat_tud1w")
+
+[connection signal="mouse_entered" from="TitleBar" to="." method="_on_title_bar_mouse_entered"]
+[connection signal="mouse_exited" from="TitleBar" to="." method="_on_title_bar_mouse_exited"]
+[connection signal="pressed" from="TitleBar/HBoxIcons/Resize" to="." method="_on_resize_pressed"]
+[connection signal="pressed" from="TitleBar/HBoxIcons/Close" to="." method="_on_close_pressed"]
